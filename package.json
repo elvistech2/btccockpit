@@ -1,0 +1,23 @@
+{
+  "name": "btc-radar",
+  "version": "1.0.0",
+  "description": "Painel local de mercado do bitcoin: preco, open interest, liquidez, liquidacoes, fluxo institucional, sentimento e snapshots. Sem dependencia externa.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "icone": "node gen-icon.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "bitcoin",
+    "dashboard",
+    "open-interest",
+    "etf",
+    "trading",
+    "painel"
+  ]
+}

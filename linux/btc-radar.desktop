@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=BTC Radar
+Comment=Painel local de mercado do bitcoin
+Exec=bash -c "cd %h/btc-radar && ./linux/start.sh"
+Icon=%h/btc-radar/icon.ico
+Terminal=false
+Categories=Office;Finance;

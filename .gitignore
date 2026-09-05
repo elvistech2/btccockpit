@@ -1,0 +1,12 @@
+# dados coletados e segredos - nada disso vai pro GitHub
+data/*
+backups/
+versoes/
+node_modules/
+*.log
+*.jsonl
+.DS_Store
+Thumbs.db
+
+# a config tem a chave da IA; o exemplo sem chave e versionado a forca
+!data/config.example.json

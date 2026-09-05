@@ -1,0 +1,17 @@
+# Deixa o painel coletando dados o tempo todo, mesmo sem o navegador aberto.
+# Copie para ~/.config/systemd/user/btc-radar.service, ajuste o caminho e rode:
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now btc-radar
+[Unit]
+Description=BTC Radar - painel local de mercado
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/btc-radar
+ExecStart=/usr/bin/node %h/btc-radar/server.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

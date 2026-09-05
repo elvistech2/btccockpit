@@ -1,0 +1,9 @@
+# Windows e Linux no mesmo repositorio: script de shell TEM que ficar com LF,
+# senao o Linux nao reconhece o shebang e reclama de "bad interpreter".
+* text=auto
+*.sh text eol=lf
+linux/btc-radar.service text eol=lf
+linux/btc-radar.desktop text eol=lf
+*.ps1 text eol=crlf
+*.vbs text eol=crlf
+*.ico binary
