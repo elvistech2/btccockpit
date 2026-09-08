@@ -112,10 +112,12 @@ $temExe = Test-Path $exe
 $icone = Join-Path $raiz 'icon.ico'
 $sh = New-Object -ComObject WScript.Shell
 
-function Atalho($caminho, $alvo, $args, $desc) {
+# ($args seria o nome natural do parametro, mas colide com a variavel automatica
+# do PowerShell que guarda os argumentos soltos da funcao)
+function Atalho($caminho, $alvo, $argumentos, $desc) {
   $l = $sh.CreateShortcut($caminho)
   $l.TargetPath = $alvo
-  if ($args) { $l.Arguments = $args }
+  if ($argumentos) { $l.Arguments = $argumentos }
   $l.WorkingDirectory = $raiz
   $l.Description = $desc
   if (Test-Path $icone) { $l.IconLocation = $icone }
