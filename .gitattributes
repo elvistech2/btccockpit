@@ -6,4 +6,9 @@ linux/btc-radar.service text eol=lf
 linux/btc-radar.desktop text eol=lf
 *.ps1 text eol=crlf
 *.vbs text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.iss text eol=crlf
+*.rc text eol=crlf
+windows/LEIA-ME.txt text eol=crlf
 *.ico binary

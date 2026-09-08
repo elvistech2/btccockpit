@@ -3,8 +3,9 @@
 // (dinheiro liquidado de verdade x agressao no futuro) - a UI nao pode misturar os dois.
 const fs = require('fs');
 const path = require('path');
+const CAMINHOS = require('./paths');
 
-const DATA = path.join(__dirname, 'data');
+const DATA = CAMINHOS.DATA;
 const TES_FILE = path.join(DATA, 'tesourarias.jsonl');   // foto diaria das empresas de capital aberto
 const TAPE_FILE = path.join(DATA, 'tape.jsonl');          // fita de negocios por faixa de tamanho, por hora
 const PREM_FILE = path.join(DATA, 'premios.jsonl');       // premio Coinbase e Coreia, a cada 10 min

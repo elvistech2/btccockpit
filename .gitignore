@@ -10,3 +10,8 @@ Thumbs.db
 
 # a config tem a chave da IA; o exemplo sem chave e versionado a forca
 !data/config.example.json
+
+# saida do empacotamento do Windows e o Node baixado pelo instalador caseiro
+build/
+node/
+windows/icon.ico

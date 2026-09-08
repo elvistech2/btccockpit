@@ -4,10 +4,10 @@
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
+const CAMINHOS = require('./paths');
 
-const RAIZ = __dirname;
-const DATA = path.join(RAIZ, 'data');
-const DEST = path.join(RAIZ, 'backups');
+const DATA = CAMINHOS.DATA;
+const DEST = CAMINHOS.BACKUPS;
 const MANTER = 14;                 // quantas copias guardar
 const ARQUIVOS = ['history.jsonl', 'liquidations.jsonl', 'snapshots.jsonl', 'sentiment.jsonl',
   'tape.jsonl', 'tesourarias.jsonl', 'premios.jsonl', 'ultima-analise.json', 'config.json'];
@@ -20,7 +20,7 @@ function pastaAgora() {
 function tamanho(f) { try { return fs.statSync(f).size } catch (e) { return 0 } }
 
 function rodar({ motivo = 'automatico' } = {}) {
-  if (!fs.existsSync(DEST)) fs.mkdirSync(DEST);
+  if (!fs.existsSync(DEST)) fs.mkdirSync(DEST, { recursive: true });
   const alvo = path.join(DEST, pastaAgora());
   if (fs.existsSync(alvo)) return { pulado: 'ja existe copia deste minuto', pasta: alvo };
   fs.mkdirSync(alvo);

@@ -3,8 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 const PAYROLL = require('./payroll');
+const CAMINHOS = require('./paths');
 
-const DATA = path.join(__dirname, 'data');
+const DATA = CAMINHOS.DATA;
 const CFG_FILE = path.join(DATA, 'config.json');
 const SENT_FILE = path.join(DATA, 'sentiment.jsonl');
 
