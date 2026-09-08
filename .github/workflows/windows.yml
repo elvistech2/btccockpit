@@ -1,9 +1,13 @@
 # Gera os pacotes do Windows num runner Windows de verdade:
-#   BTC-Radar-Setup-<versao>-win-x64.exe      instalador de clicar em "Avancar"
-#   BTC-Radar-<versao>-win-x64-portatil.zip   pasta que roda sem instalar
+#   BTC-Radar-Setup-win-x64.exe      instalador de clicar em "Avancar"
+#   BTC-Radar-win-x64-portatil.zip   pasta que roda sem instalar
+#   SHA256.txt                       soma de verificacao dos dois
 #
 # Em push e pull request vale como teste de compilacao (o lancador em C tem que
-# compilar). Numa tag v* os dois arquivos viram anexos da Release.
+# compilar). Publica release de dois jeitos, dando no mesmo:
+#   - empurrando uma tag v* (jeito de quem usa terminal)
+#   - pela aba Actions > pacote windows > Run workflow, marcando "publicar"
+#     (jeito de quem nao quer saber de tag: usa a versao que estiver no package.json)
 name: pacote windows
 
 on:
@@ -13,6 +17,11 @@ on:
     paths-ignore: ['**.md']
   pull_request:
   workflow_dispatch:
+    inputs:
+      publicar:
+        description: 'Publicar a release com a versao que esta no package.json'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -31,11 +40,17 @@ jobs:
         run: .\windows\build.ps1
 
       - name: Conferir o que saiu
+        id: pacote
         shell: pwsh
         run: |
-          $arquivos = Get-ChildItem build\saida
-          if ($arquivos.Count -lt 2) { throw "esperava o instalador e o zip portatil, vieram $($arquivos.Count) arquivo(s)" }
-          $arquivos | ForEach-Object { "{0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB) }
+          $esperados = @('BTC-Radar-Setup-win-x64.exe', 'BTC-Radar-win-x64-portatil.zip', 'SHA256.txt')
+          foreach ($nome in $esperados) {
+            $f = Join-Path 'build\saida' $nome
+            if (-not (Test-Path $f)) { throw "faltou o arquivo $nome" }
+            "{0}  {1:N1} MB" -f $nome, ((Get-Item $f).Length / 1MB)
+          }
+          $versao = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          "versao=$versao" >> $env:GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
         with:
@@ -43,9 +58,25 @@ jobs:
           path: build/saida/*
           if-no-files-found: error
 
-      - name: Anexar na Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      # O texto da release mora em windows/release-texto.md, pra poder ser lido e
+      # corrigido sem mexer em YAML. Aqui so entra a soma de verificacao, que muda
+      # a cada build.
+      - name: Escrever o texto da release
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.publicar
+        shell: pwsh
+        run: |
+          $corpo = Get-Content windows\release-texto.md -Raw
+          $somas = (Get-Content build\saida\SHA256.txt) -join "`n"
+          $corpo += "`n<details><summary>Soma de verificacao (SHA256)</summary>`n`n"
+          $corpo += '```' + "`n" + $somas + "`n" + '```' + "`n`n</details>`n"
+          Set-Content -Path release-body.md -Value $corpo -Encoding UTF8
+
+      - name: Publicar a release
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.publicar
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', steps.pacote.outputs.versao) }}
+          name: BTC Radar ${{ steps.pacote.outputs.versao }}
+          body_path: release-body.md
           files: build/saida/*
-          generate_release_notes: true
+          fail_on_unmatched_files: true

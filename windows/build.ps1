@@ -5,8 +5,15 @@
       powershell -ExecutionPolicy Bypass -File windows\build.ps1
 
   Sai em build\saida:
-    BTC-Radar-Setup-<versao>-win-x64.exe   instalador de clicar em "Avancar"
-    BTC-Radar-<versao>-win-x64-portatil.zip  pasta que roda de pendrive, sem instalar
+    BTC-Radar-Setup-win-x64.exe        instalador de clicar em "Avancar"
+    BTC-Radar-win-x64-portatil.zip     pasta que roda de pendrive, sem instalar
+    SHA256.txt                         soma de verificacao dos dois
+
+  Os nomes NAO levam a versao de proposito. Assim existe um endereco de download que
+  nunca muda e sempre entrega a versao mais nova:
+    https://github.com/elvistech2/btccockpit/releases/latest/download/BTC-Radar-Setup-win-x64.exe
+  E esse link que se manda pra alguem. A versao aparece no titulo da release, na tela do
+  instalador e em "Aplicativos instalados" do Windows.
 
   O Node oficial e baixado e conferido pelo SHA256 publicado pela nodejs.org antes de
   entrar no pacote. Nada de npm: o painel nao tem dependencia nenhuma.
@@ -87,21 +94,30 @@ if (-not (Test-Path $vcvars)) { Erro "vcvars64.bat nao encontrado em $vsDir" }
 
 $objDir = Join-Path $tmp 'obj'
 New-Item -ItemType Directory -Path $objDir -Force | Out-Null
-Copy-Item (Join-Path $raiz 'icon.ico') (Join-Path $win 'icon.ico') -Force
+# o rc.exe procura o icone ao lado do .rc, entao os dois vao pra mesma pasta temporaria
+Copy-Item (Join-Path $raiz 'icon.ico') (Join-Path $objDir 'icon.ico') -Force
+
+# O launcher.rc traz 0.0.0.0 nos campos de versao; aqui entra a versao real do
+# package.json, pra "Propriedades > Detalhes" do exe nunca mostrar numero velho.
+$quatro = ($versao -split '\.' | ForEach-Object { $_ }) + @('0', '0', '0', '0')
+$rcVersao = ($quatro[0..3] -join ',')
+$rc = Get-Content (Join-Path $win 'launcher.rc') -Raw
+$rc = $rc.Replace('0,0,0,0', $rcVersao).Replace('0.0.0.0', "$versao.0").Replace('@VERSAO@', $versao)
+$rcTmp = Join-Path $objDir 'launcher.rc'
+Set-Content -Path $rcTmp -Value $rc -Encoding ASCII
 
 $exeSaida = Join-Path $objDir 'BTC Radar.exe'
 $compilar = @"
 @echo off
 call "$vcvars" >nul || exit /b 1
 cd /d "$objDir" || exit /b 1
-rc /nologo /fo "launcher.res" "$win\launcher.rc" || exit /b 1
+rc /nologo /fo "launcher.res" "$rcTmp" || exit /b 1
 cl /nologo /O2 /W3 /MT /DUNICODE /D_UNICODE "$win\launcher.c" launcher.res /Fe:"BTC Radar.exe" /link /SUBSYSTEM:WINDOWS || exit /b 1
 "@
 $bat = Join-Path $tmp 'compilar.bat'
 Set-Content -Path $bat -Value $compilar -Encoding ASCII
 & cmd.exe /c "`"$bat`""
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $exeSaida)) { Erro 'A compilacao do lancador falhou.' }
-Remove-Item (Join-Path $win 'icon.ico') -Force -ErrorAction SilentlyContinue
 Write-Host "    ok $([math]::Round((Get-Item $exeSaida).Length / 1KB)) KB"
 
 # ------------------------------------------------------------- 3. monta a pasta app
@@ -133,7 +149,7 @@ Set-Content -Path (Join-Path $portDir 'portatil.txt') -Encoding ASCII -Value @(
   'A presenca deste arquivo faz o BTC Radar guardar historico, snapshots e a chave da IA',
   'na pasta data\ aqui do lado, em vez do perfil do usuario. Apague se preferir o perfil.'
 )
-$zipSaida = Join-Path $saida "BTC-Radar-$versao-win-x64-portatil.zip"
+$zipSaida = Join-Path $saida "BTC-Radar-win-x64-portatil.zip"
 Compress-Archive -Path $portDir -DestinationPath $zipSaida -CompressionLevel Optimal -Force
 Write-Host "    $([math]::Round((Get-Item $zipSaida).Length / 1MB, 1)) MB"
 
@@ -151,6 +167,17 @@ if ($PularInstalador) {
   & $iscc "/DVersao=$versao" (Join-Path $win 'btc-radar.iss')
   if ($LASTEXITCODE -ne 0) { Erro 'O Inno Setup falhou.' }
 }
+
+# ------------------------------------------------------------- 6. soma de verificacao
+# O instalador nao e assinado (certificado custa caro), entao o Windows avisa que nao
+# conhece o programa. A soma abaixo e o que permite a quem desconfiar conferir que o
+# arquivo baixado e exatamente o que esta maquina gerou.
+Passo 'Conferencia: gerando o SHA256.txt'
+$linhas = Get-ChildItem $saida -File | Where-Object { $_.Name -ne 'SHA256.txt' } | ForEach-Object {
+  "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name
+}
+Set-Content -Path (Join-Path $saida 'SHA256.txt') -Value $linhas -Encoding ASCII
+$linhas | ForEach-Object { Write-Host "    $_" }
 
 Passo 'Pronto'
 Get-ChildItem $saida | ForEach-Object { Write-Host ("    {0}  ({1:N1} MB)" -f $_.Name, ($_.Length / 1MB)) }

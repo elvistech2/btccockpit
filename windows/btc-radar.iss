@@ -29,7 +29,8 @@ DisableDirPage=auto
 LicenseFile=..\LICENSE
 InfoAfterFile=LEIA-ME.txt
 OutputDir=..\build\saida
-OutputBaseFilename=BTC-Radar-Setup-{#Versao}-win-x64
+; sem a versao no nome: e o que sustenta o link .../releases/latest/download/...
+OutputBaseFilename=BTC-Radar-Setup-win-x64
 SetupIconFile=..\icon.ico
 UninstallDisplayIcon={app}\{#Exe}
 UninstallDisplayName={#Nome}

@@ -14,4 +14,3 @@ Thumbs.db
 # saida do empacotamento do Windows e o Node baixado pelo instalador caseiro
 build/
 node/
-windows/icon.ico

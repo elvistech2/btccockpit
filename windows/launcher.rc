@@ -1,10 +1,13 @@
 #include <windows.h>
 
+/* Os numeros de versao aqui sao marcadores: o build.ps1 troca todos pela versao
+   do package.json antes de chamar o rc.exe. Nao edite a mao. */
+
 1 ICON "icon.ico"
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     1,0,0,0
-PRODUCTVERSION  1,0,0,0
+FILEVERSION     0,0,0,0
+PRODUCTVERSION  0,0,0,0
 FILEOS          VOS__WINDOWS32
 FILETYPE        VFT_APP
 BEGIN
@@ -14,12 +17,12 @@ BEGIN
     BEGIN
       VALUE "CompanyName",      "BTC Radar"
       VALUE "FileDescription",  "BTC Radar - painel local de mercado do bitcoin"
-      VALUE "FileVersion",      "1.0.0.0"
+      VALUE "FileVersion",      "0.0.0.0"
       VALUE "InternalName",     "btc-radar"
       VALUE "LegalCopyright",   "MIT"
       VALUE "OriginalFilename", "BTC Radar.exe"
       VALUE "ProductName",      "BTC Radar"
-      VALUE "ProductVersion",   "1.0.0"
+      VALUE "ProductVersion",   "@VERSAO@"
     END
   END
   BLOCK "VarFileInfo"

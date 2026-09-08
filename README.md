@@ -52,15 +52,37 @@ Atalho no menu: copie `linux/btc-radar.desktop` para `~/.local/share/application
 
 ### O jeito facil: o instalador
 
-1. Baixe o **`BTC-Radar-Setup-...-win-x64.exe`** na pagina de
-   [Releases](https://github.com/elvistech2/btccockpit/releases).
-2. Clique duas vezes e va em **Avancar**. Nao pede senha de administrador e nao instala
-   nada mais no computador: o Node vem dentro do proprio instalador.
-3. Clique em **BTC Radar** no Menu Iniciar. O painel abre no navegador em
+**[Baixar o instalador](https://github.com/elvistech2/btccockpit/releases/latest/download/BTC-Radar-Setup-win-x64.exe)**
+— esse link nao muda nunca e sempre entrega a versao mais nova. E ele que voce manda
+pra quem quiser usar o painel.
+
+1. Baixe, clique duas vezes e va em **Avancar**. Nao pede senha de administrador e nao
+   instala mais nada no computador: o Node vem dentro do proprio instalador.
+2. Clique em **BTC Radar** no Menu Iniciar. O painel abre no navegador em
    <http://localhost:8899>.
 
-O Windows costuma mostrar um aviso azul de "SmartScreen" em programa sem certificado pago:
-clique em **Mais informacoes** e depois em **Executar assim mesmo**.
+### O aviso azul do Windows
+
+Na primeira vez o Windows mostra *"O Windows protegeu o seu computador"* e esconde o
+botao de continuar. **Isso nao e deteccao de virus.** O Windows confia em programa por
+dois caminhos: assinatura digital com certificado pago, ou reputacao (muita gente ja
+baixou aquele arquivo e nada aconteceu). Um instalador recem-publicado de projeto pequeno
+nao tem nenhum dos dois, entao leva o aviso — o mesmo que levaria qualquer programa novo.
+
+Para continuar: **Mais informacoes** (o link pequeno, abaixo do texto) e depois
+**Executar assim mesmo**.
+
+Quem quiser conferir que baixou exatamente o arquivo que a Action gerou compara o SHA256
+publicado no rodape de cada release:
+
+```powershell
+Get-FileHash "$env:USERPROFILE\Downloads\BTC-Radar-Setup-win-x64.exe"
+```
+
+O aviso so sumiria de vez com um certificado de assinatura de codigo, que e pago e exige
+comprovacao de identidade. Se algum antivirus nao apenas avisar, mas **bloquear ou apagar**
+o arquivo, ai e falso positivo: da pra mandar o arquivo pra analise gratuita da Microsoft
+em <https://www.microsoft.com/wdsi/filesubmission>.
 
 O que o instalador coloca no Menu Iniciar:
 
@@ -80,9 +102,9 @@ desinstala nem quando instala uma versao nova por cima.
 
 ### Sem instalar: a versao portatil
 
-Na mesma pagina de Releases tem o **`BTC-Radar-...-win-x64-portatil.zip`**. Descompacte
-onde quiser (inclusive num pendrive) e clique em **BTC Radar.exe**. Nessa versao os dados
-ficam na pasta `data` ao lado do programa, e nada e escrito fora dela.
+[**BTC-Radar-win-x64-portatil.zip**](https://github.com/elvistech2/btccockpit/releases/latest/download/BTC-Radar-win-x64-portatil.zip)
+— descompacte onde quiser (inclusive num pendrive) e clique em **BTC Radar.exe**. Nessa
+versao os dados ficam na pasta `data` ao lado do programa, e nada e escrito fora dela.
 
 ### A partir do codigo-fonte
 
@@ -103,6 +125,19 @@ node server.js
 
 `node gen-icon.js` regenera o icone.
 
+### Publicando uma versao nova
+
+Sem terminal, em dois cliques:
+
+1. Mude o `"version"` do `package.json` (da pra editar pelo proprio site do GitHub).
+2. Aba **Actions** > **pacote windows** > **Run workflow**, marque **publicar** e confirme.
+
+A Action compila num Windows de verdade, cria a tag, escreve o texto da release (que mora
+em `windows/release-texto.md`) e anexa o instalador, o portatil e o `SHA256.txt`. Como os
+arquivos nao levam a versao no nome, o link de download continua o mesmo pra sempre.
+
+Quem preferir terminal: empurrar uma tag `v*` faz exatamente a mesma coisa.
+
 ### Gerando os pacotes voce mesmo
 
 Num Windows com Visual Studio Build Tools (C++) e [Inno Setup 6](https://jrsoftware.org/isdl.php):
@@ -111,8 +146,7 @@ Num Windows com Visual Studio Build Tools (C++) e [Inno Setup 6](https://jrsoftw
 powershell -ExecutionPolicy Bypass -File windows\build.ps1
 ```
 
-Sai tudo em `build\saida`. O mesmo script roda na Action `pacote windows`, que anexa os
-dois arquivos na Release a cada tag `v*`.
+Sai tudo em `build\saida`.
 
 ## A chave da inteligencia artificial
 
