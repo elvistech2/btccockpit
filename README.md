@@ -50,14 +50,69 @@ Atalho no menu: copie `linux/btc-radar.desktop` para `~/.local/share/application
 
 ## Rodando no Windows
 
+### O jeito facil: o instalador
+
+1. Baixe o **`BTC-Radar-Setup-...-win-x64.exe`** na pagina de
+   [Releases](https://github.com/elvistech2/btccockpit/releases).
+2. Clique duas vezes e va em **Avancar**. Nao pede senha de administrador e nao instala
+   nada mais no computador: o Node vem dentro do proprio instalador.
+3. Clique em **BTC Radar** no Menu Iniciar. O painel abre no navegador em
+   <http://localhost:8899>.
+
+O Windows costuma mostrar um aviso azul de "SmartScreen" em programa sem certificado pago:
+clique em **Mais informacoes** e depois em **Executar assim mesmo**.
+
+O que o instalador coloca no Menu Iniciar:
+
+| Atalho | Pra que serve |
+|---|---|
+| **BTC Radar** | abre o painel (sobe o servidor sozinho, se preciso) |
+| **Parar o BTC Radar** | para o servidor que fica coletando em segundo plano |
+| **Pasta de dados do BTC Radar** | abre onde ficam historico, snapshots e a chave da IA |
+| **Modo diagnostico (com janela)** | sobe mostrando a mensagem de erro, quando algo nao funciona |
+
+Na tela de instalacao da pra marcar **"Manter o BTC Radar coletando dados desde que o
+computador liga"** — util porque a fita de negocios e o historico por minuto so existem
+enquanto o servidor esta de pe.
+
+Seus dados ficam em `%LOCALAPPDATA%\BTC Radar\data` e **nao sao apagados** quando voce
+desinstala nem quando instala uma versao nova por cima.
+
+### Sem instalar: a versao portatil
+
+Na mesma pagina de Releases tem o **`BTC-Radar-...-win-x64-portatil.zip`**. Descompacte
+onde quiser (inclusive num pendrive) e clique em **BTC Radar.exe**. Nessa versao os dados
+ficam na pasta `data` ao lado do programa, e nada e escrito fora dela.
+
+### A partir do codigo-fonte
+
+Quem baixou o repositorio (botao verde **Code > Download ZIP**, ou `git clone`) clica duas
+vezes em **`Instalar BTC Radar (Windows).cmd`**. Ele confere se voce tem Node 22+, baixa o
+oficial da nodejs.org so pra dentro da pasta se nao tiver (conferindo a soma SHA256), cria
+os atalhos e abre o painel — tudo dentro do seu usuario, sem administrador.
+
+Para desfazer: **Menu Iniciar > BTC Radar > Desinstalar o BTC Radar**.
+
+Quem prefere a linha de comando continua podendo:
+
 ```powershell
-git clone https://github.com/SEU-USUARIO/btc-radar.git
-cd btc-radar
+git clone https://github.com/elvistech2/btccockpit.git
+cd btccockpit
 node server.js
 ```
 
-Ou clique duas vezes em **BTC Radar.vbs**, que sobe o servidor escondido e abre o navegador.
 `node gen-icon.js` regenera o icone.
+
+### Gerando os pacotes voce mesmo
+
+Num Windows com Visual Studio Build Tools (C++) e [Inno Setup 6](https://jrsoftware.org/isdl.php):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File windows\build.ps1
+```
+
+Sai tudo em `build\saida`. O mesmo script roda na Action `pacote windows`, que anexa os
+dois arquivos na Release a cada tag `v*`.
 
 ## A chave da inteligencia artificial
 
@@ -117,7 +172,9 @@ O que precisa de CORS passa pelo proxy do proprio servidor, em `/px/...`, com ca
 
 ## Onde ficam seus dados
 
-Tudo em `data/`, em JSONL (uma linha por registro), e **nada e apagado automaticamente**:
+Tudo em `data/`, em JSONL (uma linha por registro), e **nada e apagado automaticamente**
+(no Windows instalado, essa pasta e `%LOCALAPPDATA%\BTC Radar\data`; a variavel
+`BTC_RADAR_DATA` manda em qualquer sistema):
 
 - `history.jsonl` — foto por minuto de open interest, funding e basis
 - `liquidations.jsonl` — cada liquidacao capturada

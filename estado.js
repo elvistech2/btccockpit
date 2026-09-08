@@ -8,8 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 const FLUXOS = require('./fluxos');
+const CAMINHOS = require('./paths');
 
-const DATA = path.join(__dirname, 'data');
+const DATA = CAMINHOS.DATA;
 const HIST_FILE = path.join(DATA, 'history.jsonl');
 const BIN = 'https://fapi.binance.com';
 

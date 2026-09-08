@@ -1,0 +1,51 @@
+# Gera os pacotes do Windows num runner Windows de verdade:
+#   BTC-Radar-Setup-<versao>-win-x64.exe      instalador de clicar em "Avancar"
+#   BTC-Radar-<versao>-win-x64-portatil.zip   pasta que roda sem instalar
+#
+# Em push e pull request vale como teste de compilacao (o lancador em C tem que
+# compilar). Numa tag v* os dois arquivos viram anexos da Release.
+name: pacote windows
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+    paths-ignore: ['**.md']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  empacotar:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Montar instalador e portatil
+        shell: pwsh
+        run: .\windows\build.ps1
+
+      - name: Conferir o que saiu
+        shell: pwsh
+        run: |
+          $arquivos = Get-ChildItem build\saida
+          if ($arquivos.Count -lt 2) { throw "esperava o instalador e o zip portatil, vieram $($arquivos.Count) arquivo(s)" }
+          $arquivos | ForEach-Object { "{0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB) }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btc-radar-windows
+          path: build/saida/*
+          if-no-files-found: error
+
+      - name: Anexar na Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/saida/*
+          generate_release_notes: true

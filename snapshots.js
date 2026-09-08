@@ -8,8 +8,9 @@ const SENT = require('./sentiment');
 const PRED = require('./preditivo');
 const TEC = require('./tecnico');
 const ESTADO = require('./estado');
+const CAMINHOS = require('./paths');
 
-const DATA = path.join(__dirname, 'data');
+const DATA = CAMINHOS.DATA;
 const FILE = path.join(DATA, 'snapshots.jsonl');
 const BIN = 'https://fapi.binance.com';
 

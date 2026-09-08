@@ -1,0 +1,47 @@
+BTC RADAR - painel local de mercado do bitcoin
+==============================================
+
+O QUE E
+  Um painel que roda no seu proprio computador e mostra preco, open interest,
+  liquidez, liquidacoes, fluxo dos ETFs, sentimento e indicadores tecnicos do
+  bitcoin, juntando dados publicos das corretoras. Nada e enviado pra fora:
+  o servidor escuta so em 127.0.0.1, ou seja, so a sua maquina alcanca.
+
+COMO USAR
+  Clique em "BTC Radar" no Menu Iniciar (ou na Area de Trabalho). O painel abre
+  no seu navegador em http://localhost:8899. Na primeira vez leva alguns
+  segundos ate a tela aparecer.
+
+  O painel continua rodando em segundo plano depois que voce fecha a aba do
+  navegador - e assim que ele vai montando o historico. Para parar de vez, use
+  "Parar o BTC Radar" no Menu Iniciar.
+
+A CHAVE DA INTELIGENCIA ARTIFICIAL (opcional)
+  So os resumos em texto das noticias e dos documentos do Fed usam IA. Todo o
+  resto funciona sem chave nenhuma.
+  Se quiser esses resumos: pegue uma chave gratuita em
+  https://aistudio.google.com/apikey e cole no campo do topo da aba "Sentimento".
+  Nao precisa editar arquivo nenhum.
+
+ONDE FICAM OS SEUS DADOS
+  %LOCALAPPDATA%\BTC Radar\data
+  (cole esse caminho na barra do Explorador de Arquivos, ou use o atalho
+  "Pasta de dados do BTC Radar" no Menu Iniciar)
+
+  Historico, snapshots, liquidacoes e a chave da IA ficam ai. Desinstalar o
+  programa NAO apaga essa pasta. Copias compactadas automaticas ficam na pasta
+  "backups" ao lado.
+
+SE ALGO DER ERRADO
+  Use "Modo diagnostico (com janela)" no Menu Iniciar: ele sobe o painel com a
+  janela preta a vista, mostrando a mensagem de erro.
+
+  Nao ha nada pra configurar no Firewall do Windows: o painel nao aceita conexao
+  de fora da maquina.
+
+AVISO
+  Isto nao e recomendacao de investimento. O painel junta dado publico e mostra
+  de onde cada numero veio; ele nao preve preco. Leia a secao "Honestidade sobre
+  os limites" do README.
+
+Licenca MIT - https://github.com/elvistech2/btccockpit

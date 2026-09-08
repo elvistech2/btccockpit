@@ -11,9 +11,10 @@ const BACKUP = require('./backup');
 const PAYROLL = require('./payroll');
 const ESTADO = require('./estado');
 const FLUXOS = require('./fluxos');
+const CAMINHOS = require('./paths');
 
 const ROOT = __dirname;
-const DATA = path.join(ROOT, 'data');
+const DATA = CAMINHOS.DATA;
 const PORT = +(process.env.BTC_RADAR_PORT || 8899);
 // Escuta so na propria maquina: o painel guarda a chave da IA e aceita gravar
 // configuracao, entao nao pode ficar aberto pra rede sem a pessoa querer.
@@ -21,7 +22,25 @@ const PORT = +(process.env.BTC_RADAR_PORT || 8899);
 const HOST = process.env.BTC_RADAR_HOST || '127.0.0.1';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.ico': 'image/x-icon' };
 
-if (!fs.existsSync(DATA)) fs.mkdirSync(DATA);
+CAMINHOS.garantir(DATA);
+
+// Quem sobe o painel escondido (o atalho do Windows, o systemd) precisa de um jeito de
+// parar depois. O arquivo abaixo diz qual processo e a porta; some sozinho ao sair.
+const PID_FILE = path.join(DATA, 'servidor.pid');
+function anotarPid() {
+  try { fs.writeFileSync(PID_FILE, JSON.stringify({ pid: process.pid, porta: PORT, t: Date.now() })); } catch (e) { }
+}
+function limparPid() {
+  try {
+    const j = JSON.parse(fs.readFileSync(PID_FILE, 'utf8'));
+    if (j.pid === process.pid) fs.unlinkSync(PID_FILE);
+  } catch (e) { }
+}
+process.on('exit', limparPid);
+for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+  process.on(sinal, () => { limparPid(); process.exit(0); });
+}
+
 const HIST_FILE = path.join(DATA, 'history.jsonl');
 const LIQ_FILE = path.join(DATA, 'liquidations.jsonl');
 
@@ -360,6 +379,7 @@ http.createServer(async (req, res) => {
     res.end(buf);
   });
 }).listen(PORT, HOST, () => {
+  anotarPid();
   console.log('btc-dashboard on http://localhost:' + PORT + (HOST === '127.0.0.1' ? '' : '  (aberto em ' + HOST + ')'));
   console.log(`historico: ${history.length} minutos | liquidacoes: ${liqs.length} | snapshots: ${SNAP.total()}`);
   initOkxCtVal().then(pollOkxLiq);
