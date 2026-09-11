@@ -1,6 +1,6 @@
 {
   "name": "btc-radar",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Painel local de mercado do bitcoin: preco, open interest, liquidez, liquidacoes, fluxo institucional, sentimento e snapshots. Sem dependencia externa.",
   "main": "server.js",
   "scripts": {
