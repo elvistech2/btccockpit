@@ -8,6 +8,7 @@ const SENT = require('./sentiment');
 const PRED = require('./preditivo');
 const TEC = require('./tecnico');
 const ESTADO = require('./estado');
+const OI = require('./oi');
 const CAMINHOS = require('./paths');
 
 const DATA = CAMINHOS.DATA;
@@ -26,20 +27,15 @@ const getJSON = (u, o) => fetch(u, o).then(r => r.json()).catch(() => null);
 const num = v => (v == null || !isFinite(v)) ? null : +v;
 
 // variacao percentual do OI agregado usando o historico que o servidor grava por minuto
+// mesmas corretoras nos dois momentos: minuto com corretora faltando nao vira queda falsa
 function deltaOI(history, ms) {
-  if (!history.length) return null;
-  const total = r => Object.values(r.oi || {}).reduce((a, b) => a + (b.btc || 0), 0);
-  const agora = history[history.length - 1];
-  const alvo = agora.t - ms;
-  let base = null;
-  for (const r of history) if (r.t <= alvo) base = r;
-  if (!base || base === agora) return null;
-  const a = total(base), b = total(agora);
-  return a > 0 ? +(((b / a) - 1) * 100).toFixed(3) : null;
+  const v = OI.variacao(history, ms);
+  return v == null ? null : +v.toFixed(3);
 }
 
 async function estadoServidor(history, liqs) {
   const ultimo = history[history.length - 1] || {};
+  const completa = OI.ultimaCompleta(history) || {};   // OI por corretora so de linha completa
   const [g, t, tk, depth] = await Promise.all([
     getJSON(BIN + '/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1'),
     getJSON(BIN + '/futures/data/topLongShortPositionRatio?symbol=BTCUSDT&period=5m&limit=1'),
@@ -56,7 +52,7 @@ async function estadoServidor(history, liqs) {
     livro = { bidUsd: Math.round(bid), askUsd: Math.round(ask), ratio: ask ? +(bid / ask).toFixed(3) : null, janelaPct: 0.5, fonte: 'binance' };
   }
   const oiBtc = {}, oiUsd = {};
-  for (const [ex, v] of Object.entries(ultimo.oi || {})) { oiBtc[ex] = Math.round(v.btc); oiUsd[ex] = Math.round(v.usd || 0); }
+  for (const [ex, v] of Object.entries(completa.oi || {})) { oiBtc[ex] = Math.round(v.btc); oiUsd[ex] = Math.round(v.usd || 0); }
   const soma = o => Object.values(o).reduce((a, b) => a + b, 0);
   const janela = (h, lado) => liqs.filter(l => l.t >= Date.now() - h * 3.6e6 && l.side === lado)
     .reduce((a, b) => a + b.px * b.qty, 0);

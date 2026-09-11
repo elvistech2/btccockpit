@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const FLUXOS = require('./fluxos');
+const OI = require('./oi');
 const CAMINHOS = require('./paths');
 
 const DATA = CAMINHOS.DATA;
@@ -33,7 +34,6 @@ function lerHistorico(horas) {
     .map(l => { try { return JSON.parse(l); } catch (e) { return null; } })
     .filter(r => r && r.t >= corte);
 }
-const oiTotal = r => Object.values(r.oi || {}).reduce((a, b) => a + (b.btc || 0), 0);
 const media = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -77,8 +77,7 @@ async function ler(nDias = 14) {
   /* ---------- dados de fluxo ---------- */
   const hist = lerHistorico(nDias * 24);
   const histOk = hist.length > 30;
-  const oiIni = histOk ? oiTotal(hist[0]) : null, oiFim = histOk ? oiTotal(hist.at(-1)) : null;
-  const dOI = histOk && oiIni ? (oiFim / oiIni - 1) * 100 : null;
+  const dOI = histOk ? OI.variacaoTrecho(hist) : null;   // mesmas corretoras no inicio e no fim
   const precoIni = janela[0].c;
   const dPreco = (preco / precoIni - 1) * 100;
   const fundingMedio = histOk ? media(hist.map(r => r.funding).filter(x => isFinite(x))) * 100 : null;

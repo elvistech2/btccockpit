@@ -41,7 +41,10 @@
   #px{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.5px;transition:color .25s}
   .stat{display:flex;flex-direction:column;line-height:1.25}
   .stat b{font-family:var(--mono);font-size:12px;font-weight:500}
-  @media(max-width:1440px){ .stat.opt{display:none} }
+  /* barra do topo: numa linha só, some primeiro o que é enfeite, nunca os links do fim */
+  .cmdbar>.classic,.cmdbar>#fedCont,.cmdbar>.live{flex-shrink:0}
+  .cmdbar.justa{gap:12px} .cmdbar.justa .views button{padding:8px 8px;letter-spacing:1px}
+  .cmdbar .someBarra{display:none!important}
   .views{margin-left:auto;display:flex;gap:2px}
   .views button{background:none;border:0;color:var(--dim2);font:600 10px/1 var(--ui);letter-spacing:1.6px;
     text-transform:uppercase;padding:8px 13px;cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
@@ -912,11 +915,16 @@ async function carregarBase(){
 
   const hist=await api('/api/history?hours=48');
   if(hist&&hist.length){
-    const tot=r=>Object.values(r.oi||{}).reduce((a,b)=>a+(b.btc||0),0);
-    const agora=hist.at(-1);
+    // Minuto com corretora faltando (a API dela falhou) nao pode virar "OI caiu 80%":
+    // o "agora" e a ultima linha completa e a comparacao usa as mesmas corretoras (ver oi.js).
+    const chavesOI=r=>Object.keys(r.oi||{}).filter(k=>r.oi[k]&&r.oi[k].btc>0);
+    const cheio=Math.max(...hist.slice(-120).map(r=>chavesOI(r).length));
+    let agora=hist.at(-1); for(let i=hist.length-1;i>=0;i--) if(chavesOI(hist[i]).length>=cheio){ agora=hist[i]; break; }
+    const K=chavesOI(agora);
+    const tot=r=>K.reduce((a,k)=>a+((r.oi[k]||{}).btc||0),0);
     S.oiTotal=tot(agora);
-    S.oiUsd=Object.values(agora.oi||{}).reduce((a,b)=>a+(b.usd||0),0);
-    const em=ms=>{ const alvo=agora.t-ms; let b=null; for(const r of hist) if(r.t<=alvo) b=r; return b?tot(b):null; };
+    S.oiUsd=K.reduce((a,k)=>a+((agora.oi[k]||{}).usd||0),0);
+    const em=ms=>{ const alvo=agora.t-ms; let b=null; for(const r of hist){ if(r.t>alvo) break; if(K.every(k=>r.oi&&r.oi[k]&&r.oi[k].btc>0)) b=r; } return b&&b!==agora?tot(b):null; };
     const d1=em(3.6e6), d24=em(864e5);
     S.oi.d1=d1?((S.oiTotal/d1-1)*100):null; S.oi.d24=d24?((S.oiTotal/d24-1)*100):null;
     // o histórico local pode ter menos de 24h; nesse caso usa a série da Binance,
@@ -929,7 +937,7 @@ async function carregarBase(){
     };
     if(S.oi.d1==null) S.oi.d1=varSerie(1);
     if(S.oi.d24==null) S.oi.d24=varSerie(24);
-    $('#c-oi').innerHTML=`${nf(S.oiTotal/1000,1)}k <span class="dim2" style="font-size:10px">BTC · ${usd(S.oiUsd)}</span>`;
+    $('#c-oi').innerHTML=`${nf(S.oiTotal/1000,1)}k <span class="dim2" style="font-size:10px">BTC<span class="oiUsd"> · ${usd(S.oiUsd)}</span></span>`;
     const cor=v=>v==null?'—':`<span class="${v>=0?'buy':'sell'}">${pct(v)}</span>`;
     $('#oiD1').innerHTML=cor(S.oi.d1); $('#oiD24').innerHTML=cor(S.oi.d24);
   }
@@ -1459,7 +1467,7 @@ function nuncaMaisHoroscopo(){
 }
 // o horóscopo usa a IA: sem chave cadastrada, nem janela nem botão
 function horoscopoPermitido(){ return !!(S.chave&&S.chave.tem); }
-function atualizarBotaoHoroscopo(){ const b=$('#horoBtn'); if(b) b.hidden=!horoscopoPermitido(); }
+function atualizarBotaoHoroscopo(){ const b=$('#horoBtn'); if(b) b.hidden=!horoscopoPermitido(); if(typeof caberBarra==='function') caberBarra(); }
 $('#horoBtn').onclick=()=>abrirHoroscopo(true);
 $('#horoTela').onclick=e=>{ if(e.target.id==='horoTela') fecharHoroscopo(); };
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#horoTela').hidden) fecharHoroscopo(); });
@@ -1530,7 +1538,7 @@ function tickFed(){
   if(!prox){ el.innerHTML='<span class="lbl">Fed decide em</span><b class="dim2">—</b>'; return; }
   const ms=prox.t-agora;
   const cor=ms<3.6e6?'var(--sell)':ms<24*3.6e6?'var(--warn)':'var(--txt)';
-  el.innerHTML='<span class="lbl">Fed decide em'+(prox.projecoes?' ·&nbsp;com projeções':'')+'</span><b style="color:'+cor+'">'+faltam(ms)+'</b>';
+  el.innerHTML='<span class="lbl">Fed decide em</span><b style="color:'+cor+'">'+faltam(ms)+'</b>';
   el.title='decisão de juros: '+prox.quando+' (Brasília)'+(prox.projecoes?' · com o gráfico de pontos dos dirigentes':'')+' · clique pra ver a agenda';
 }
 function pintarAgenda(){
@@ -1998,6 +2006,24 @@ addEventListener('keydown',e=>{
   if(e.key==='r'||e.key==='R'){ carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia();
     toast('Atualizando','Buscando preço, livro, liquidações e sentimento de novo.'); }
 });
+
+/* ================= BARRA DO TOPO QUE CABE ================= */
+// A barra é uma linha só. Regra fixa por largura sempre erra, porque o conteúdo muda de
+// tamanho (preço, OI, contagem do Fed). Aqui ela mede e esconde, do menos pro mais
+// importante, até caber — os links do fim e a contagem do Fed são os últimos a sair.
+const CORTES_BARRA=['justa','.stat.opt','.sym','.oiUsd','#live span','#badge','#chg','#versao','#fedCont'];
+function caberBarra(){
+  const bar=document.querySelector('.cmdbar'); if(!bar) return;
+  bar.classList.remove('justa'); bar.querySelectorAll('.someBarra').forEach(e=>e.classList.remove('someBarra'));
+  for(const c of CORTES_BARRA){
+    if(bar.scrollWidth<=bar.clientWidth) break;
+    if(c==='justa') bar.classList.add('justa');
+    else bar.querySelectorAll(c).forEach(e=>e.classList.add('someBarra'));
+  }
+}
+addEventListener('resize',caberBarra);
+setInterval(caberBarra,4000);           // preço e contagem mudam de largura sozinhos
+setTimeout(caberBarra,300);
 
 /* ================= ATUALIZAÇÃO ================= */
 // O servidor consulta a Release mais nova no GitHub. Se tiver versão nova, aparece o
