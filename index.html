@@ -173,33 +173,45 @@
   .chaveForm{border:1px solid var(--warn);border-radius:3px;padding:16px 18px;margin-bottom:22px}
   /* ---- botões de humor, estilo instant button ---- */
   #rail{display:flex;flex-direction:column}
-  .humorBox{margin-top:auto;padding-top:14px}
-  .instant{display:flex;flex-direction:column;gap:8px}
-  .instantSons{order:0} .instantBotoes{order:1} .instantRodape{order:2}   /* painel de sons abre por cima; contador fica embaixo */
+  /* A caixa usa o vão livre da coluna. Com folga (.amplo, medida em JS) os botões ficam
+     grandes em duas fileiras distribuídas; sem folga, uma fileira compacta no pé. */
+  .humorBox{margin-top:auto;padding-top:14px;display:flex;flex-direction:column}
+  .humorBox.amplo{flex:1;margin-top:0;padding-top:16px;min-height:0}
+  .humorCab{display:flex;align-items:center;gap:6px}
+  .humorCab .lbl{flex:1}
+  #instantCfg,#instantMin{cursor:pointer;opacity:.5;font-size:12px;line-height:1;padding:2px 3px;user-select:none}
+  #instantCfg:hover,#instantMin:hover{opacity:1}
+  .instant{display:flex;flex-direction:column;flex:1;min-height:0}
   body:not([data-view="radar"]) .instant{display:none}
-  .instantBotoes{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;justify-items:center;padding:9px 2px 6px;
-    border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--hair)}
-  .ibtn{position:relative;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;color:var(--txt)}
-  .ibtn i{display:block;width:54px;height:54px;border-radius:50%;position:relative;
-    box-shadow:0 6px 0 var(--sombra),0 9px 14px rgba(0,0,0,.55),inset 0 -6px 10px rgba(0,0,0,.25);transition:transform .07s,box-shadow .07s}
+  .instantBotoes{--tam:34px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px 2px;justify-items:center;align-content:center;
+    padding:12px 2px 10px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--hair)}
+  .humorBox.amplo .instantBotoes{flex:1;grid-template-columns:repeat(6,1fr);gap:10px 4px;padding:14px 6px;align-content:space-evenly}
+  .humorBox.amplo .ibtn{grid-column:span 2}
+  .humorBox.amplo .ibtn.assopra{grid-column:2 / span 2}
+  .humorBox.amplo .ibtn.moeda{grid-column:4 / span 2}
+  .instant.recolhido .instantBotoes{display:none}
+  .ibtn{position:relative;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;
+    padding:0;color:var(--txt);min-width:0}
+  .ibtn i{display:block;width:var(--tam);height:var(--tam);border-radius:50%;position:relative;
+    box-shadow:0 calc(var(--tam)*.11) 0 var(--sombra),0 calc(var(--tam)*.17) calc(var(--tam)*.26) rgba(0,0,0,.55),inset 0 calc(var(--tam)*-.11) calc(var(--tam)*.19) rgba(0,0,0,.25);
+    transition:transform .07s,box-shadow .07s}
   .ibtn i::after{content:"";position:absolute;left:22%;top:12%;width:56%;height:30%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,0))}
   .ibtn:hover i{filter:brightness(1.12)}
-  .ibtn:active i{transform:translateY(5px);box-shadow:0 1px 0 var(--sombra),0 3px 6px rgba(0,0,0,.5),inset 0 -3px 8px rgba(0,0,0,.25)}
-  .ibtn span{font:800 9.5px var(--ui);letter-spacing:1.3px;text-shadow:0 1px 2px #000}
-  .ibtn em{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;
-    background:#0b1220;border:1px solid var(--hair2);font:700 10px/18px var(--mono);font-style:normal;color:var(--txt)}
+  .ibtn:active i{transform:translateY(calc(var(--tam)*.09));box-shadow:0 1px 0 var(--sombra),0 3px 6px rgba(0,0,0,.5),inset 0 -3px 8px rgba(0,0,0,.25)}
+  .ibtn span{font:800 7.5px var(--ui);letter-spacing:.4px;text-shadow:0 1px 2px #000;white-space:nowrap}
+  .humorBox.amplo .ibtn span{font-size:10px;letter-spacing:1.3px}
+  /* nome curto no modo compacto, onde cada botão tem uns 40 px de largura */
+  .ibtn .ct{display:none}
+  .humorBox:not(.amplo) .ibtn .lg{display:none} .humorBox:not(.amplo) .ibtn .ct{display:inline}
   .ibtn.panico{--sombra:#1b5b8a} .ibtn.panico i{background:radial-gradient(circle at 50% 35%,#8fdcff,#2b8fd6 60%,#1f6aa3)}
   .ibtn.rage{--sombra:#8a1111} .ibtn.rage i{background:radial-gradient(circle at 50% 35%,#ff8c8c,#e11d2a 60%,#a50f1a)}
   .ibtn.money{--sombra:#16691f} .ibtn.money i{background:radial-gradient(circle at 50% 35%,#a6ff9e,#2fbf4a 60%,#1c8a31)}
-  .ibtn.assopra{--sombra:#8a2d6e} .ibtn.assopra i{background:radial-gradient(circle at 50% 35%,#ffc2ec,#e75bbd 60%,#a8327f);transition:transform .12s}
+  .ibtn.assopra{--sombra:#8a2d6e} .ibtn.assopra i{background:radial-gradient(circle at 50% 35%,#ffc2ec,#e75bbd 60%,#a8327f)}
   .ibtn.moeda{--sombra:#8a6510} .ibtn.moeda i{background:radial-gradient(circle at 50% 35%,#fff1a8,#f2c230 55%,#b8860b)}
-  .ibtn.moeda i::before{content:"₿";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 24px var(--ui);color:rgba(120,80,0,.55)}
-  /* cinco botoes: um pouco menores pra caber no canto */
-  .ibtn i{width:32px;height:32px;box-shadow:0 4px 0 var(--sombra),0 6px 10px rgba(0,0,0,.55),inset 0 -4px 7px rgba(0,0,0,.25)}
-  .ibtn:active i{transform:translateY(3px)}
-  .ibtn{gap:5px} .ibtn span{font-size:7.5px;letter-spacing:.5px;white-space:nowrap}
-  .ibtn em{top:-7px;right:-9px;min-width:16px;height:16px;line-height:14px;font-size:8.5px;padding:0 3px}
-  .ibtn.moeda i::before{font-size:17px}
+  .ibtn.moeda i::before{content:"₿";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font:800 calc(var(--tam)*.52) var(--ui);color:rgba(120,80,0,.55)}
+  .instantSons{position:fixed;left:16px;bottom:16px;z-index:60;width:min(560px,calc(100vw - 32px));background:#0b1220;
+    border:1px solid var(--hair2);border-radius:6px;padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
   #px.soprado{text-shadow:0 0 14px rgba(25,224,138,.7);transition:text-shadow .2s}
   .soproFaixa{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:65;pointer-events:none;
     background:rgba(40,8,32,.9);border:1px solid #e75bbd;border-radius:22px;padding:6px 18px;font:12px var(--mono);color:#ffe3f5;
@@ -224,14 +236,6 @@
   .moedaRes.sim{color:#4ade80;text-shadow:0 0 24px rgba(74,222,128,.5)} .moedaRes.nao{color:#ff5a66;text-shadow:0 0 24px rgba(255,90,102,.5)}
   .moedaFrase{font:15px/1.6 var(--ui);min-height:26px;max-width:520px;margin:6px auto 18px;padding:0 20px}
   .moedaBotoes{display:flex;gap:10px;justify-content:center}
-  .instantRodape{display:flex;gap:8px;align-items:center;font:10px/1.6 var(--mono);color:var(--dim)}
-  .instantRodape #instantPe{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .instantRodape .cPan{color:#5cc0ff} .instantRodape .cRag{color:#ff5a66} .instantRodape .cMon{color:#4ade80}
-  #instantCfg,#instantMin{cursor:pointer;opacity:.6} #instantCfg:hover,#instantMin:hover{opacity:1}
-  .instant.recolhido .instantBotoes,.instant.recolhido .instantSons{display:none}
-  .instant.recolhido #instantMin{transform:rotate(180deg)}
-  .instantSons{position:fixed;left:16px;bottom:16px;z-index:60;width:min(560px,calc(100vw - 32px));background:#0b1220;
-    border:1px solid var(--hair2);border-radius:6px;padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
   .somLinha{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;font:10.5px var(--mono)}
   .somLinha b{width:86px} .somLinha .f{flex:1;min-width:180px} .somLinha .btn{padding:4px 8px}
 
@@ -451,16 +455,16 @@
       <div id="macro"><div class="dim2 m" style="font-size:11px">carregando…</div></div>
 
       <div class="humorBox">
-        <div class="lbl">Humor do trader</div><div class="rule"></div>
+        <div class="humorCab"><div class="lbl">Humor do trader</div><span id="instantCfg" title="trocar os sons">⚙</span><span id="instantMin" title="recolher / mostrar os botões">▾</span></div>
+        <div class="rule"></div>
         <div id="instant" class="instant">
           <div class="instantBotoes">
-            <button class="ibtn panico" data-b="panico" title="respira, vai passar"><i></i><span>PÂNICO</span><em id="cnt-panico">0</em></button>
-            <button class="ibtn rage" data-b="rage" title="deixa sair"><i></i><span>RAGE</span><em id="cnt-rage">0</em></button>
-            <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span>MONEY BABY</span><em id="cnt-money">0</em></button>
-            <button class="ibtn assopra" data-b="assopra" title="clica rápido e sem parar: o gráfico sobe. Só na tela, é claro"><i></i><span>ASSOPRA</span><em id="cnt-assopra">0</em></button>
-            <button class="ibtn moeda" data-b="moeda" title="cara ou coroa pra decidir"><i></i><span>SORTE?</span><em id="cnt-moeda">0</em></button>
+            <button class="ibtn panico" data-b="panico" title="respira, vai passar"><i></i><span>PÂNICO</span></button>
+            <button class="ibtn rage" data-b="rage" title="deixa sair"><i></i><span>RAGE</span></button>
+            <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span class="lg">MONEY BABY</span><span class="ct">MONEY</span></button>
+            <button class="ibtn assopra" data-b="assopra" title="clica rápido e sem parar: o gráfico sobe. Só na tela, é claro"><i></i><span class="lg">ASSOPRA</span><span class="ct">SOPRA</span></button>
+            <button class="ibtn moeda" data-b="moeda" title="cara ou coroa pra decidir"><i></i><span>SORTE?</span></button>
           </div>
-          <div class="instantRodape"><span id="instantPe">…</span><span id="instantCfg" title="trocar os sons">⚙</span><span id="instantMin" title="recolher / mostrar os botões">▾</span></div>
           <div id="instantSons" class="instantSons" hidden></div>
         </div>
       </div>
@@ -2872,21 +2876,12 @@ function efeitoMoney(){
 }
 
 /* ---- contador ---- */
-async function carregarBotoes(){ const j=await api('/api/botoes'); if(j&&!j.error){ S.botoes=j; pintarContador(); } }
-function pintarContador(){
-  const b=S.botoes; if(!b) return;
-  const tot=n=>(b[n]&&b[n].total)||0, hj=n=>(b[n]&&b[n].hoje)||0;
-  for(const n of ['panico','rage','money','assopra','moeda']){ const el=$('#cnt-'+n); if(el) el.textContent=tot(n)>999?Math.round(tot(n)/1000)+'k':tot(n); }
-  const hoje=['panico','rage','money'].map(hj);
-  const humor=hoje[2]>hoje[1]+hoje[0]?'o dia está verde':hoje[1]>hoje[2]?'dia difícil, hein':hoje[0]>0?'respira':hj('assopra')>40?'assopra que passa':'';
-  const m=b.moeda||{};
-  $('#instantPe').title=`hoje: pânico ${hoje[0]} · rage ${hoje[1]} · money ${hoje[2]} · sopros ${hj('assopra')} · moeda ${hj('moeda')} (sim ${m.simHoje||0}, não ${m.naoHoje||0})${humor?' — '+humor:''}`;
-  $('#instantPe').innerHTML=`hoje <b class="cPan">${hoje[0]}</b>·<b class="cRag">${hoje[1]}</b>·<b class="cMon">${hoje[2]}</b> 🎈${hj('assopra')} 🪙${hj('moeda')}${humor?` <span class="dim2">${humor}</span>`:''}`;
-}
+// O contador saiu da tela a pedido; o servidor continua anotando em data/botoes.json.
+function pintarContador(){}
 async function contarBotao(nome,extra){
   try{
     const r=await fetch('/api/botoes/'+nome+(extra||''),{method:'POST',headers:{'x-btc-radar':'1'}});
-    const j=await r.json(); if(!j.error){ S.botoes=j; pintarContador(); }
+    await r.json();
   }catch(e){}
 }
 function apertarHumor(nome){
@@ -2897,7 +2892,25 @@ function apertarHumor(nome){
 }
 document.querySelectorAll('#instant .ibtn').forEach(b=>b.onclick=()=>apertarHumor(b.dataset.b));
 // recolher: some com os botões e deixa só o rodapé com o contador
-function recolherHumor(sim){ $('#instant').classList.toggle('recolhido',sim); document.body.classList.toggle('instMin',sim); try{ localStorage.setItem('btcr-instant-min',sim?'1':''); }catch(e){} }
+function recolherHumor(sim){
+  $('#instant').classList.toggle('recolhido',sim);
+  $('#instantMin').textContent=sim?'▴':'▾';
+  try{ localStorage.setItem('btcr-instant-min',sim?'1':''); }catch(e){}
+  ajustarHumor();
+}
+// mede quanto sobra na coluna embaixo do Macro e escolhe o jeito de mostrar os botões
+function ajustarHumor(){
+  const box=document.querySelector('.humorBox'), rail=$('#rail'), macro=$('#macro');
+  if(!box||!rail||!macro||!rail.offsetParent) return;
+  const livre=rail.getBoundingClientRect().bottom-parseFloat(getComputedStyle(rail).paddingBottom)-macro.getBoundingClientRect().bottom;
+  const amplo=livre>=250&&!$('#instant').classList.contains('recolhido');
+  box.classList.toggle('amplo',amplo);
+  // botão cresce com o espaço, até 72 px, sem passar de um terço da largura da coluna
+  const grade=document.querySelector('.instantBotoes'), largura=grade.clientWidth||200;
+  grade.style.setProperty('--tam',amplo?Math.round(Math.max(44,Math.min(72,(livre-120)/4,largura/3-18)))+'px':'');
+}
+if(window.ResizeObserver){ const ro=new ResizeObserver(()=>ajustarHumor()); ['#rail','#macro','#brief','#mkts'].forEach(q=>{ const el=$(q); if(el) ro.observe(el); }); }
+addEventListener('resize',ajustarHumor);
 $('#instantMin').onclick=()=>recolherHumor(!$('#instant').classList.contains('recolhido'));
 try{ if(localStorage.getItem('btcr-instant-min')) recolherHumor(true); }catch(e){}
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&fxAtual) pararHumor(); });
@@ -3088,7 +3101,7 @@ montarLegenda();
 conectar();
 carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia(); carregarMercados();
 carregarFng(); carregarHistSent(); carregarSnaps(); carregarBackup(); frescor(); carregarChave();
-carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); carregarBotoes(); setTimeout(checarAtualizacao,1500);
+carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); setTimeout(checarAtualizacao,1500);
 setInterval(checarAtualizacao,3.6e6); carregarEstado();
 setInterval(carregarEstado,300000);
 setInterval(carregarPayroll,6*3.6e6); setInterval(carregarInflacao,6*3.6e6);
