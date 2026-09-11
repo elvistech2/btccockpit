@@ -48,4 +48,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: build/saida/*
-          generate_release_notes: true
+          # o painel mostra este texto no aviso de versao nova: escreva pra quem usa
+          body_path: NOVIDADES.md

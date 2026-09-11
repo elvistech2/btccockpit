@@ -114,6 +114,23 @@ powershell -ExecutionPolicy Bypass -File windows\build.ps1
 Sai tudo em `build\saida`. O mesmo script roda na Action `pacote windows`, que anexa os
 dois arquivos na Release a cada tag `v*`.
 
+## Atualizacoes
+
+O painel consulta a Release mais nova deste repositorio ao abrir e a cada 6 horas. Quando
+tem versao nova, aparece um aviso com as novidades e o botao **atualizar agora**:
+
+- **Windows instalado:** baixa o `BTC-Radar-Setup`, confere o SHA-256 contra o que o GitHub
+  publica, fecha o servidor, instala por cima em modo silencioso e sobe o painel de novo.
+  Historico, snapshots e chave ficam.
+- **Linux com git clone:** `git pull --ff-only` e reinicia o servidor (com systemd, ele sobe sozinho).
+- **Versao portatil:** o aviso aparece, mas a troca e manual (o node.exe em uso nao pode ser trocado por ele mesmo).
+
+O numero da versao no topo do painel mostra qual esta instalada; clique nele pra procurar na hora.
+
+**Publicando uma versao:** atualize `version` no `package.json` e o texto de `NOVIDADES.md`,
+faca o commit e crie a tag: `git tag v1.2.3 && git push origin v1.2.3`. O GitHub monta o
+instalador e o zip e publica a Release sozinho — e os paineis instalados passam a oferecer a atualizacao.
+
 ## A chave da inteligencia artificial
 
 So a analise de noticias e a do Fed usam IA. Todo o resto do painel funciona sem chave nenhuma.

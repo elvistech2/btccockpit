@@ -10,6 +10,12 @@ const TEC = require('./tecnico');
 const BACKUP = require('./backup');
 const PAYROLL = require('./payroll');
 const INFLACAO = require('./inflacao');
+const ATUALIZADOR = require('./atualizador');
+
+// Pedido que muda alguma coisa (grava chave, instala versao) tem que trazer este cabecalho.
+// Pagina de outro site ate consegue mandar POST pro localhost, mas nao com cabecalho
+// proprio: o navegador exige autorizacao previa (preflight), e este servidor nao da.
+const pedidoDoPainel = req => req.headers['x-btc-radar'] === '1';
 const ESTADO = require('./estado');
 const FLUXOS = require('./fluxos');
 const CAMINHOS = require('./paths');
@@ -316,8 +322,17 @@ http.createServer(async (req, res) => {
     try { return json(res, await FLUXOS.tudo(d, ultimo, h)); }
     catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
   }
+  if (url.startsWith('/api/atualizacao/aplicar') && req.method === 'POST') {
+    if (!pedidoDoPainel(req)) { res.writeHead(403); return res.end('forbidden'); }
+    try { return json(res, await ATUALIZADOR.aplicar()); }
+    catch (e) { return json(res, { error: String(e.message || e).slice(0, 300) }); }
+  }
+  if (url.startsWith('/api/atualizacao')) {
+    return json(res, await ATUALIZADOR.estado(/forcar=1/.test(url)));
+  }
   if (url.startsWith('/api/config')) {
     if (req.method === 'POST') {
+      if (!pedidoDoPainel(req)) { res.writeHead(403); return res.end('forbidden'); }
       const body = await new Promise(r => { let b = ''; req.on('data', c => b += c); req.on('end', () => r(b)); });
       let p = {};
       try { p = JSON.parse(body || '{}'); } catch (e) { }
@@ -404,5 +419,7 @@ http.createServer(async (req, res) => {
   try { console.log('backup:', JSON.stringify(BACKUP.rodar({ motivo: 'inicio' }))); } catch (e) { }
   setInterval(() => { try { BACKUP.rodar({ motivo: 'periodico' }) } catch (e) { } }, 6 * 3.6e6);
   FLUXOS.coletarPremios().catch(() => { });
+  setTimeout(() => ATUALIZADOR.verificar().catch(() => { }), 20000);
+  setInterval(() => ATUALIZADOR.verificar(true).catch(() => { }), 6 * 3.6e6);
   setInterval(() => { FLUXOS.coletarPremios().catch(() => { }); }, 10 * 6e4);
 });

@@ -171,6 +171,22 @@
     border:1px solid var(--hair);border-radius:3px;padding:8px 12px;margin-bottom:20px}
   .chaveOk .btn{margin-left:auto;padding:3px 10px}
   .chaveForm{border:1px solid var(--warn);border-radius:3px;padding:16px 18px;margin-bottom:22px}
+  .updAviso{position:fixed;top:54px;right:18px;z-index:60;width:min(430px,calc(100vw - 36px));
+    background:#0b1220;border:1px solid var(--data);border-radius:4px;padding:14px 16px;
+    box-shadow:0 10px 40px rgba(0,0,0,.55);font:11.5px var(--mono)}
+  .updCab{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .updCab .dim2{flex-basis:100%;font-size:10.5px;margin-left:15px}
+  .updNotas{margin:10px 0 2px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:3px;
+    max-height:190px;overflow:auto;font:10.5px/1.6 var(--mono);color:var(--dim)}
+  .updTit{color:var(--txt);font-weight:600;margin-top:4px}
+  .updItem{padding-left:4px}
+  .updBotoes{display:flex;gap:8px;margin-top:12px}
+  .updObs{font-size:10px;margin-top:9px;line-height:1.5}
+  .updTela{position:fixed;inset:0;z-index:80;background:rgba(3,6,12,.82);display:flex;align-items:center;justify-content:center}
+  .updTela[hidden]{display:none}
+  .updCaixa{background:#0b1220;border:1px solid var(--hair2);border-radius:4px;padding:22px 26px;width:min(440px,calc(100vw - 40px))}
+  .updBarra{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin-top:14px}
+  .updBarra i{display:block;height:100%;background:var(--data);transition:width .3s}
   .acumLinha{display:flex;align-items:center;gap:9px;margin-top:9px;font:11px var(--mono)}
   .acumTag{border:1px solid;border-radius:2px;padding:2px 7px;font:700 9.5px var(--ui);letter-spacing:1.4px}
   .fngbox{position:relative;height:130px;margin-top:10px}
@@ -285,6 +301,8 @@
 </style>
 </head>
 <body data-view="radar">
+<div id="updAviso" class="updAviso" hidden></div>
+<div id="updTela" class="updTela" hidden></div>
 <div id="app">
 
   <div class="cmdbar">
@@ -306,6 +324,7 @@
       <button data-v="alert">Alertas</button>
     </div>
     <div class="live" id="live"><i></i><span>CONECTANDO</span></div>
+    <span class="classic" id="versao" style="cursor:pointer" title="versão instalada · clique pra procurar atualização">v…</span>
     <span class="classic" id="copiar" style="cursor:pointer" title="copia um resumo do mercado">copiar</span>
     <span class="classic" id="ajuda" style="cursor:pointer">atalhos</span>
   </div>
@@ -1589,6 +1608,117 @@ addEventListener('keydown',e=>{
     toast('Atualizando','Buscando preço, livro, liquidações e sentimento de novo.'); }
 });
 
+/* ================= ATUALIZAÇÃO ================= */
+// O servidor consulta a Release mais nova no GitHub. Se tiver versão nova, aparece o
+// aviso; "atualizar agora" baixa, confere o SHA-256, instala por cima e o painel volta sozinho.
+S.upd=null;
+const escHtml=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function checarAtualizacao(forcar){
+  const j=await api('/api/atualizacao'+(forcar?'?forcar=1':''));
+  if(!j) return null;
+  S.upd=j; pintarVersao(); pintarAvisoUpd(); resultadoUpd();
+  return j;
+}
+function pintarVersao(){
+  const u=S.upd, el=$('#versao'); if(!u||!el) return;
+  el.textContent=(u.atual?'v'+u.atual:'versão ?')+(u.temNova?' → '+u.nova:'');
+  el.style.color=u.temNova?'var(--data)':'';
+}
+function notasHtml(t){
+  return String(t||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).slice(0,14).map(l=>{
+    l=escHtml(l).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
+    if(/^#+\s/.test(l)) return '<div class="updTit">'+l.replace(/^#+\s*/,'')+'</div>';
+    if(/^[*-]\s/.test(l)) return '<div class="updItem">· '+l.replace(/^[*-]\s*/,'')+'</div>';
+    return '<div>'+l+'</div>';
+  }).join('');
+}
+function pintarAvisoUpd(){
+  const u=S.upd, el=$('#updAviso'); if(!el) return;
+  let adiada=null; try{ adiada=localStorage.getItem('btcr-upd-adiar'); }catch(e){}
+  if(!u||!u.temNova||adiada===u.nova||(u.progresso&&u.progresso.fase!=='ocioso'&&u.progresso.fase!=='erro')){ el.hidden=true; return; }
+  const quando=u.publicadaEm?new Date(u.publicadaEm).toLocaleDateString('pt-BR'):'';
+  const tam=u.instalador&&u.instalador.tamanho?' · '+(u.instalador.tamanho/1e6).toFixed(0)+' MB':'';
+  el.hidden=false;
+  el.innerHTML=`<div class="updCab">
+      <span class="cd" style="background:var(--data)"></span>
+      <b>Versão ${escHtml(u.nova)} disponível</b>
+      <span class="dim2">você está na ${escHtml(u.atual)}${quando?' · publicada em '+quando:''}${tam}</span>
+    </div>
+    <div class="updNotas" id="updNotas" hidden>${notasHtml(u.notas)||'<div class="dim2">sem notas</div>'}</div>
+    <div class="updBotoes">
+      ${u.podeAplicar
+        ?'<button class="btn primary" id="updAgora">atualizar agora</button>'
+        :'<a class="btn primary" href="'+escHtml(u.pagina)+'" target="_blank" rel="noopener" style="text-decoration:none">baixar</a>'}
+      <button class="btn" id="updVer">novidades</button>
+      <button class="btn" id="updDepois">depois</button>
+    </div>
+    ${u.podeAplicar?'<div class="dim2 updObs">o painel fecha por uns 30 segundos, instala por cima e volta sozinho — histórico, snapshots e chave ficam</div>'
+      :'<div class="dim2 updObs">nesta forma de instalação ('+escHtml(u.modo)+') a atualização é manual</div>'}`;
+  const ag=$('#updAgora'); if(ag) ag.onclick=iniciarAtualizacao;
+  $('#updVer').onclick=()=>{ const n=$('#updNotas'); n.hidden=!n.hidden; };
+  $('#updDepois').onclick=()=>{ try{ localStorage.setItem('btcr-upd-adiar',u.nova); }catch(e){} el.hidden=true;
+    toast('Atualização adiada','A versão '+u.nova+' fica esperando. Clique no número da versão no topo pra atualizar quando quiser.'); };
+}
+function telaUpd(titulo,texto,pct){
+  const el=$('#updTela'); el.hidden=false;
+  el.innerHTML=`<div class="updCaixa">
+    <div class="h2">${titulo}</div>
+    <div class="st" style="margin-top:8px">${texto}</div>
+    ${pct!=null?`<div class="updBarra"><i style="width:${Math.max(2,Math.min(100,pct))}%"></i></div>`:'<div class="st"><span class="spin"></span></div>'}
+  </div>`;
+}
+async function iniciarAtualizacao(){
+  const alvo=S.upd&&S.upd.nova;
+  telaUpd('Atualizando para a versão '+escHtml(alvo),'começando…',0);
+  let j;
+  try{ const r=await fetch('/api/atualizacao/aplicar',{method:'POST',headers:{'x-btc-radar':'1'}}); j=await r.json(); }
+  catch(e){ j={error:'o servidor não respondeu'}; }
+  if(j.error){ $('#updTela').hidden=true; toast('Não deu pra atualizar',escHtml(j.error),'erro'); return; }
+  acompanharAtualizacao(alvo);
+}
+async function acompanharAtualizacao(alvo){
+  const inicio=Date.now(); let caiu=false;
+  for(;;){
+    if(Date.now()-inicio>240000){
+      telaUpd('Demorou mais que o normal','O painel ainda não voltou. Abra o BTC Radar pelo atalho — se a atualização falhou, ele sobe na versão anterior.',null);
+      return;
+    }
+    let u=null;
+    try{ const r=await fetch('/api/atualizacao',{cache:'no-store'}); if(r.ok) u=await r.json(); }catch(e){}
+    if(!u){ caiu=true;
+      telaUpd('Instalando a versão '+escHtml(alvo),'o painel fechou pra instalar por cima e volta sozinho em alguns segundos…',null);
+    }else if(caiu||u.atual===alvo){
+      if(u.atual===alvo){ telaUpd('Atualizado','Versão '+escHtml(alvo)+' instalada. Recarregando…',100); setTimeout(()=>location.reload(),1200); return; }
+      const res=u.ultimoResultado;
+      if(res&&!res.ok){ $('#updTela').hidden=true; toast('A atualização falhou','O instalador terminou com código '+res.codigo+'. O painel continua na versão '+escHtml(u.atual)+'.','erro'); S.upd=u; pintarVersao(); return; }
+    }else{
+      const p=u.progresso||{};
+      if(p.fase==='erro'){ $('#updTela').hidden=true; toast('Não deu pra atualizar',escHtml(p.msg||''),'erro'); return; }
+      if(p.fase==='baixando') telaUpd('Baixando a versão '+escHtml(alvo),((p.baixado||0)/1e6).toFixed(1)+' de '+((p.total||0)/1e6).toFixed(1)+' MB',p.total?p.baixado/p.total*100:null);
+      else if(p.fase==='conferindo') telaUpd('Conferindo o arquivo','comparando o SHA-256 com o que o GitHub publicou…',100);
+      else if(p.fase==='instalando'||p.fase==='reiniciando') telaUpd('Instalando a versão '+escHtml(alvo),'o painel vai fechar por alguns segundos e voltar sozinho…',null);
+    }
+    await new Promise(ok=>setTimeout(ok,caiu?2000:700));
+  }
+}
+// depois de uma atualizacao, o painel novo conta o que aconteceu uma vez so
+function resultadoUpd(){
+  const r=S.upd&&S.upd.ultimoResultado; if(!r) return;
+  let visto=null; try{ visto=localStorage.getItem('btcr-upd-visto'); }catch(e){}
+  if(visto===String(r.t)) return;
+  try{ localStorage.setItem('btcr-upd-visto',String(r.t)); }catch(e){}
+  if(r.ok) toast('BTC Radar atualizado','Da versão '+escHtml(r.de)+' para a '+escHtml(r.para)+'.');
+  else toast('A última atualização falhou','O instalador terminou com código '+escHtml(r.codigo)+'. Continua na versão '+escHtml(S.upd.atual)+'.','erro');
+}
+$('#versao').onclick=async()=>{
+  $('#versao').textContent='procurando…';
+  const u=await checarAtualizacao(true);
+  if(!u){ toast('Atualização','O servidor não respondeu.','erro'); return; }
+  if(u.erro) toast('Não deu pra consultar o GitHub',escHtml(u.erro),'erro');
+  else if(u.temNova){ try{ localStorage.removeItem('btcr-upd-adiar'); }catch(e){} pintarAvisoUpd(); }
+  else toast('Você está na versão mais nova','BTC Radar '+escHtml(u.atual)+'.');
+};
+
 /* ================= CHAVE DO GEMINI ================= */
 // A chave fica só no servidor. Aqui só chega a máscara, o bastante pra reconhecer qual é.
 S.chave=null;
@@ -1627,7 +1757,7 @@ async function salvarChave(){
   if(!v){ msg.innerHTML='<span class="sell">cole a chave antes de salvar</span>'; return; }
   btn.disabled=true; msg.innerHTML='<span class="spin"></span>perguntando ao Google se a chave presta…';
   try{
-    const r=await fetch('/api/config',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({geminiKey:v})});
+    const r=await fetch('/api/config',{method:'POST',headers:{'content-type':'application/json','x-btc-radar':'1'},body:JSON.stringify({geminiKey:v})});
     const j=await r.json();
     if(j.error) throw new Error(j.error);
     S.chave=j; S.trocandoChave=false; inp.value='';
@@ -2366,7 +2496,8 @@ montarLegenda();
 conectar();
 carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia(); carregarMercados();
 carregarFng(); carregarHistSent(); carregarSnaps(); carregarBackup(); frescor(); carregarChave();
-carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); carregarEstado();
+carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); setTimeout(checarAtualizacao,1500);
+setInterval(checarAtualizacao,3.6e6); carregarEstado();
 setInterval(carregarEstado,300000);
 setInterval(carregarPayroll,6*3.6e6); setInterval(carregarInflacao,6*3.6e6);
 setInterval(carregarTecnico,120000);
