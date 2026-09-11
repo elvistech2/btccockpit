@@ -196,12 +196,21 @@ async function aplicar() {
       if (info.modo === 'windows-instalado') {
         const { destino } = await baixar(info.instalador);
         const ps1 = path.join(TMP, 'aplicar.ps1');
+        const log = path.join(TMP, 'atualizacao.log');
         fs.writeFileSync(ps1, scriptWindows({ setup: destino, de: info.atual, para: info.nova }), 'ascii');
-        try { fs.unlinkSync(RESULTADO); } catch (e) { }
+        for (const f of [RESULTADO, log]) { try { fs.unlinkSync(f); } catch (e) { } }
         progresso = { fase: 'instalando', para: info.nova };
-        spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', ps1],
-          { detached: true, stdio: 'ignore', windowsHide: true, cwd: TMP }).unref();
-        setTimeout(() => process.exit(0), 1500);   // solta o node.exe pra o Setup poder trocar ele
+        // Pelo cmd /c start, e nao direto: no Windows o "detached" do Node cria o processo
+        // sem console, e o powershell.exe sem console sai com codigo 0 SEM rodar o script
+        // (testado). O start entrega um processo normal, que sobrevive ao node fechar.
+        spawn('cmd.exe', ['/d', '/c', 'start', '""', '/b', 'powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+          '-WindowStyle', 'Hidden', '-File', ps1], { detached: true, stdio: 'ignore', windowsHide: true, cwd: TMP }).unref();
+        // So fecha o servidor depois de ver o script de instalacao vivo (a primeira coisa que
+        // ele faz e escrever no log). Se ele nao comecar, o painel continua no ar e avisa.
+        let vivo = false;
+        for (let i = 0; i < 30 && !vivo; i++) { await new Promise(ok => setTimeout(ok, 500)); vivo = fs.existsSync(log); }
+        if (!vivo) throw new Error('o processo de instalacao nao comecou (antivirus?) - nada foi mudado, o painel segue na versao ' + info.atual);
+        setTimeout(() => process.exit(0), 500);   // solta o node.exe pra o Setup poder trocar ele
       } else if (info.modo === 'git') {
         progresso = { fase: 'instalando', para: info.nova };
         await new Promise((ok, falha) => execFile('git', ['pull', '--ff-only'], { cwd: RAIZ, windowsHide: true },
