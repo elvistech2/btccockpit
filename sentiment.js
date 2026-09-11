@@ -95,12 +95,12 @@ const MORTOS = new Set();   // modelo que respondeu 404: aposentado, nao adianta
 const TEMPORARIO = new Set([408, 425, 429, 500, 502, 503, 504]);
 const espera = ms => new Promise(r => setTimeout(r, ms));
 
-async function chamarGemini(modelo, prompt) {
+async function chamarGemini(modelo, prompt, temperatura) {
   const c = cfg();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`;
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.3, responseMimeType: 'application/json' }
+    generationConfig: { temperature: temperatura ?? 0.3, responseMimeType: 'application/json' }
   };
   const ctl = new AbortController();
   const to = setTimeout(() => ctl.abort(), 90000);
@@ -134,7 +134,8 @@ async function chamarGemini(modelo, prompt) {
   } finally { clearTimeout(to); }
 }
 
-async function gemini(prompt) {
+// temperatura: 0.3 pra analise (padrao); piada pede mais solta (o horoscopo usa 1.0)
+async function gemini(prompt, temperatura) {
   const c = cfg();
   if (!c.geminiKey) throw new Error('sem chave do Gemini em data/config.json');
   const modelos = [...new Set([c.geminiModel, ...FILA_MODELOS].filter(Boolean))].filter(m => !MORTOS.has(m));
@@ -143,7 +144,7 @@ async function gemini(prompt) {
   for (let volta = 0; volta < 2; volta++) {
     for (const m of modelos) {
       try {
-        const out = await chamarGemini(m, prompt);
+        const out = await chamarGemini(m, prompt, temperatura);
         if (out && typeof out === 'object') out.modelo = m;
         return out;
       } catch (e) {
@@ -460,4 +461,4 @@ function ultimos(hours = 168) {
   } catch (e) { return []; }
 }
 
-module.exports = { cfg, infoChave, validarChave, salvarChave, fearGreed, noticias, fedDocs, analisarNoticias, analisarFed, analisar, ultimasAnalises, salvar, ultimos };
+module.exports = { cfg, gemini, infoChave, validarChave, salvarChave, fearGreed, noticias, fedDocs, analisarNoticias, analisarFed, analisar, ultimasAnalises, salvar, ultimos };

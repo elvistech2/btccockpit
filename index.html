@@ -163,6 +163,47 @@
   table.grid td{text-align:right;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
   table.grid tbody tr:hover{background:rgba(255,255,255,.03)}
   .payroll{margin:10px 0 14px}
+  .horoTela{position:fixed;inset:0;z-index:85;background:rgba(6,4,18,.8);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;animation:fxEntra .3s}
+  .horoTela[hidden]{display:none}
+  .horoCaixa{width:min(520px,calc(100vw - 30px));max-height:calc(100vh - 40px);overflow:auto;background:linear-gradient(170deg,#1a1036,#0b1220 60%);
+    border:1px solid #6d4bd8;border-radius:10px;padding:22px 24px 16px;box-shadow:0 20px 60px rgba(80,40,200,.35)}
+  .horoTit{text-align:center;font:800 11px var(--ui);letter-spacing:4px;color:#b69cff}
+  .horoGrande{text-align:center;font-size:52px;line-height:1.1;margin:8px 0 2px;filter:drop-shadow(0 0 14px rgba(182,156,255,.6))}
+  .horoSigNome{text-align:center;font:11px var(--mono);color:var(--dim2)}
+  .horoTitulo{text-align:center;font:800 18px var(--ui);color:#fff;margin:14px 0 10px}
+  .horoTexto{font:14px/1.7 var(--ui);color:#e8e2ff}
+  .horoLinhas{display:grid;gap:9px;margin-top:16px}
+  .horoLinhas div{font:12.5px/1.55 var(--ui);color:#d9d3f3}
+  .horoLinhas span{display:block;font:700 9.5px var(--ui);letter-spacing:1.5px;text-transform:uppercase;color:#b69cff;margin-bottom:2px}
+  .horoPe{display:flex;gap:8px;justify-content:center;margin-top:18px}
+  .horoAviso{text-align:center;font:10px var(--mono);color:var(--dim2);margin-top:10px}
+  .horoSignos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .horoSigno{background:rgba(255,255,255,.04);border:1px solid var(--hair2);border-radius:8px;padding:10px 4px;cursor:pointer;color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:4px}
+  .horoSigno:hover{background:rgba(182,156,255,.14);border-color:#b69cff}
+  .horoSigno b{font-size:24px} .horoSigno span{font:11px var(--ui)}
+  .replayTela{position:fixed;inset:0;z-index:84;background:#05070d;display:flex;align-items:center;justify-content:center;animation:fxEntra .3s}
+  .replayTela[hidden]{display:none}
+  .rpEscolha{width:min(560px,calc(100vw - 30px));background:#0b1220;border:1px solid #7a1f28;border-radius:10px;padding:22px 22px 16px}
+  .rpItem{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;background:rgba(255,255,255,.03);
+    border:1px solid var(--hair);border-radius:6px;padding:10px 12px;margin-bottom:7px;cursor:pointer;color:var(--txt);font:12.5px var(--ui)}
+  .rpItem:hover{background:rgba(255,66,86,.1);border-color:#ff4256}
+  .rpData{font:11px var(--mono);color:var(--dim2)} .rpItem b{font:700 13px var(--mono)}
+  .rpPalco{width:min(1100px,calc(100vw - 30px));height:min(640px,calc(100vh - 40px));display:flex;flex-direction:column;gap:10px}
+  .rpCab{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+  .rpTit{font:800 20px var(--ui);color:#fff}
+  .rpCab .st{max-width:620px;line-height:1.5}
+  .rpNums{text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+  .rpNums b{font:700 30px var(--mono);color:#fff;line-height:1} .rpNums span{font:700 15px var(--mono)}
+  .rpGraf{position:relative;flex:1;min-height:0;border:1px solid var(--hair);border-radius:6px;background:#080c14}
+  .rpGraf canvas{width:100%;height:100%;display:block}
+  .rpFlash{position:absolute;left:0;right:0;top:12%;text-align:center;font:900 clamp(18px,3.4vw,34px) var(--ui);opacity:0;pointer-events:none}
+  .rpFlash.queda{color:#ff5a66;text-shadow:0 0 18px rgba(255,20,40,.6)} .rpFlash.fundo{color:#ffb020;text-shadow:0 0 18px rgba(255,160,0,.6)}
+  .rpFlash.alta{color:#4ade80;text-shadow:0 0 18px rgba(74,222,128,.5)}
+  .rpFlash.vivo{animation:rpPisca 1.6s ease-out}
+  @keyframes rpPisca{0%{opacity:0;transform:scale(.9)}12%{opacity:1;transform:scale(1.04)}70%{opacity:1}100%{opacity:0;transform:scale(1)}}
+  .rpBarra{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .rpFim{font:13px/1.6 var(--ui);color:var(--txt);background:rgba(255,66,86,.08);border:1px solid rgba(255,66,86,.35);border-radius:6px;padding:9px 12px}
+  .rpFim .btn{margin-left:8px;padding:3px 10px}
   .opRegua{position:relative;height:62px;margin:16px 6px 8px}
   .opTrilho{position:absolute;left:0;right:0;top:24px;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(25,224,138,.35),rgba(255,255,255,.08) 50%,rgba(255,66,86,.35))}
   .opMarca{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font:9.5px var(--mono);white-space:nowrap}
@@ -200,12 +241,10 @@
   #instantCfg:hover,#instantMin:hover{opacity:1}
   .instant{display:flex;flex-direction:column;flex:1;min-height:0}
   body:not([data-view="radar"]) .instant{display:none}
-  .instantBotoes{--tam:34px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px 2px;justify-items:center;align-content:center;
+  .instantBotoes{--tam:30px;display:grid;grid-template-columns:repeat(6,1fr);gap:6px 2px;justify-items:center;align-content:center;
     padding:12px 2px 10px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--hair)}
   .humorBox.amplo .instantBotoes{flex:1;grid-template-columns:repeat(6,1fr);gap:10px 4px;padding:14px 6px;align-content:space-evenly}
   .humorBox.amplo .ibtn{grid-column:span 2}
-  .humorBox.amplo .ibtn.assopra{grid-column:2 / span 2}
-  .humorBox.amplo .ibtn.moeda{grid-column:4 / span 2}
   .instant.recolhido .instantBotoes{display:none}
   .ibtn{position:relative;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;
     padding:0;color:var(--txt);min-width:0}
@@ -225,6 +264,8 @@
   .ibtn.money{--sombra:#16691f} .ibtn.money i{background:radial-gradient(circle at 50% 35%,#a6ff9e,#2fbf4a 60%,#1c8a31)}
   .ibtn.assopra{--sombra:#8a2d6e} .ibtn.assopra i{background:radial-gradient(circle at 50% 35%,#ffc2ec,#e75bbd 60%,#a8327f)}
   .ibtn.moeda{--sombra:#8a6510} .ibtn.moeda i{background:radial-gradient(circle at 50% 35%,#fff1a8,#f2c230 55%,#b8860b)}
+  .ibtn.crash{--sombra:#3a0a0e} .ibtn.crash i{background:radial-gradient(circle at 50% 35%,#6b6b6b,#2a2a2e 55%,#0c0c0e)}
+  .ibtn.crash i::before{content:"📉";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:calc(var(--tam)*.46)}
   .ibtn.moeda i::before{content:"₿";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font:800 calc(var(--tam)*.52) var(--ui);color:rgba(120,80,0,.55)}
   .instantSons{position:fixed;left:16px;bottom:16px;z-index:60;width:min(560px,calc(100vw - 32px));background:#0b1220;
@@ -433,6 +474,8 @@
 <body data-view="radar">
 <div id="updAviso" class="updAviso" hidden></div>
 <div id="fxOverlay" class="fxOverlay" hidden></div>
+<div id="horoTela" class="horoTela" hidden></div>
+<div id="replayTela" class="replayTela" hidden></div>
 <div id="updTela" class="updTela" hidden></div>
 <div id="app">
 
@@ -456,6 +499,7 @@
       <button data-v="alert">Alertas</button>
     </div>
     <div class="live" id="live"><i></i><span>CONECTANDO</span></div>
+    <span class="classic" id="horoBtn" style="cursor:pointer" title="horóscopo cripto do dia">🔮</span>
     <span class="classic" id="versao" style="cursor:pointer" title="versão instalada · clique pra procurar atualização">v…</span>
     <span class="classic" id="copiar" style="cursor:pointer" title="copia um resumo do mercado">copiar</span>
     <span class="classic" id="ajuda" style="cursor:pointer">atalhos</span>
@@ -482,6 +526,7 @@
             <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span>MONEY</span></button>
             <button class="ibtn assopra" data-b="assopra" title="clica rápido e sem parar: o gráfico sobe. Só na tela, é claro"><i></i><span class="lg">ASSOPRA</span><span class="ct">SOPRA</span></button>
             <button class="ibtn moeda" data-b="moeda" title="cara ou coroa pra decidir"><i></i><span>SORTE?</span></button>
+            <button class="ibtn crash" data-b="crash" title="reviva os piores dias do bitcoin, vela a vela"><i></i><span>CRASH</span></button>
           </div>
           <div id="instantSons" class="instantSons" hidden></div>
         </div>
@@ -1342,6 +1387,60 @@ async function carregarPayroll(){
       ${p.proximo?'Próximo em '+p.proximo.dia.split('-').reverse().join('/')+'.':''}</div>
   </div>`;
 }
+
+/* ---------- horóscopo cripto ---------- */
+// Abre sozinho uma vez por dia, na primeira vez que o painel é aberto. Signo fica no navegador.
+const SIGNOS=[['aries','Áries','♈'],['touro','Touro','♉'],['gemeos','Gêmeos','♊'],['cancer','Câncer','♋'],['leao','Leão','♌'],['virgem','Virgem','♍'],
+  ['libra','Libra','♎'],['escorpiao','Escorpião','♏'],['sagitario','Sagitário','♐'],['capricornio','Capricórnio','♑'],['aquario','Aquário','♒'],['peixes','Peixes','♓']];
+const diaHoje=()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); };
+const lerLS=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const gravarLS=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+function fecharHoroscopo(){ const el=$('#horoTela'); el.hidden=true; el.innerHTML=''; }
+function escolherSigno(){
+  const el=$('#horoTela'); el.hidden=false;
+  el.innerHTML='<div class="horoCaixa"><div class="horoTit">🔮 HORÓSCOPO CRIPTO</div>'+
+    '<div class="st" style="text-align:center;margin:6px 0 16px">Qual é o seu signo? Os astros e o funding querem saber.</div>'+
+    '<div class="horoSignos">'+SIGNOS.map(s=>'<button class="horoSigno" data-s="'+s[0]+'"><b>'+s[2]+'</b><span>'+s[1]+'</span></button>').join('')+'</div>'+
+    '<div class="horoPe"><button class="btn" id="horoFechar">agora não</button></div></div>';
+  el.querySelectorAll('.horoSigno').forEach(b=>b.onclick=()=>{ gravarLS('btcr-signo',b.dataset.s); abrirHoroscopo(true); });
+  $('#horoFechar').onclick=()=>{ gravarLS('btcr-horo-dia',diaHoje()); fecharHoroscopo(); };
+}
+async function abrirHoroscopo(forcar){
+  const signo=lerLS('btcr-signo');
+  if(!signo) return escolherSigno();
+  const s=SIGNOS.find(x=>x[0]===signo)||SIGNOS[0];
+  const el=$('#horoTela'); el.hidden=false;
+  el.innerHTML='<div class="horoCaixa"><div class="horoTit">🔮 HORÓSCOPO CRIPTO</div><div class="horoGrande">'+s[2]+'</div>'+
+    '<div class="st" style="text-align:center"><span class="spin"></span>consultando os astros e o funding…</div></div>';
+  const h=await api('/api/horoscopo?signo='+signo);
+  if(el.hidden) return;                             // fechou enquanto carregava
+  gravarLS('btcr-horo-dia',diaHoje());
+  if(!h||h.error){ el.innerHTML='<div class="horoCaixa"><div class="horoTit">🔮 HORÓSCOPO CRIPTO</div><div class="st">Os astros não responderam: '+escHtml((h&&h.error)||'servidor fora do ar')+'</div><div class="horoPe"><button class="btn" id="horoFechar">fechar</button></div></div>'; $('#horoFechar').onclick=fecharHoroscopo; return; }
+  const dataTxt=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  const m=h.mercado||{};
+  el.innerHTML='<div class="horoCaixa">'+
+    '<div class="horoTit">🔮 HORÓSCOPO CRIPTO</div>'+
+    '<div class="horoGrande">'+s[2]+'</div>'+
+    '<div class="horoSigNome">'+s[1]+' · '+dataTxt+'</div>'+
+    '<div class="horoTitulo">'+escHtml(h.titulo)+'</div>'+
+    '<div class="horoTexto">'+escHtml(h.texto)+'</div>'+
+    '<div class="horoLinhas">'+
+      '<div><span>❤️ Amor e alavancagem</span>'+escHtml(h.amor)+'</div>'+
+      '<div><span>🧭 Conselho do dia</span>'+escHtml(h.conselho)+'</div>'+
+      '<div><span>🍀 Número e cor da sorte</span>'+escHtml(h.numero)+' · '+escHtml(h.cor)+'</div>'+
+      '<div><span>🤝 Combina com</span>'+escHtml(h.compatibilidade)+'</div>'+
+    '</div>'+
+    '<div class="horoPe"><button class="btn primary" id="horoFechar">bora operar (com juízo)</button><button class="btn" id="horoTrocar">trocar signo</button></div>'+
+    '<div class="horoAviso">horóscopo não é análise — mas também não é pior que o grupo do zap'+(h.origem==='modelo'?' · feito sem a IA hoje':'')+'</div>'+
+  '</div>';
+  $('#horoFechar').onclick=fecharHoroscopo;
+  $('#horoTrocar').onclick=escolherSigno;
+}
+$('#horoBtn').onclick=()=>abrirHoroscopo(true);
+$('#horoTela').onclick=e=>{ if(e.target.id==='horoTela') fecharHoroscopo(); };
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#horoTela').hidden) fecharHoroscopo(); });
+// primeira abertura do dia: espera o painel montar e mostra
+if(lerLS('btcr-horo-dia')!==diaHoje()) setTimeout(()=>{ if($('#horoTela').hidden) abrirHoroscopo(); },2500);
 
 /* ---------- opções da Deribit, traduzidas ---------- */
 S.opcoes=null;
@@ -3024,6 +3123,7 @@ async function contarBotao(nome,extra){
 function apertarHumor(nome){
   if(nome==='assopra') return assoprar();
   if(nome==='moeda') return jogarMoeda();
+  if(nome==='crash'){ contarBotao('crash'); return abrirReplay(); }
   ({panico:efeitoPanico,rage:efeitoRage,money:efeitoMoney})[nome]();
   contarBotao(nome);
 }
@@ -3214,6 +3314,132 @@ function jogarMoeda(){
   $('#moedaDeNovo').onclick=e=>{ e.stopPropagation(); jogarMoeda(); };
   $('#moedaFechar').onclick=e=>{ e.stopPropagation(); pararHumor(); };
 }
+
+/* ================= REPLAY DO CRASH ================= */
+// Revive um dia de queda feia vela a vela (5 min), acelerado, com som nos piores momentos.
+// Os números saem das velas reais da Binance daquele dia; o texto de contexto é curto e factual.
+const CRASHES=[
+  {d:'2020-03-12',nome:'Quinta-feira negra da COVID',ctx:'O mundo percebe a pandemia, as bolsas despencam e todo mundo vende o que dá — bitcoin incluso.'},
+  {d:'2021-05-19',nome:'China aperta o cerco às criptos',ctx:'Pequim proíbe bancos e empresas de pagamento de mexer com cripto e o mercado alavancado derrete.'},
+  {d:'2021-12-04',nome:'Crash relâmpago de sábado',ctx:'De madrugada, num fim de semana de pouca liquidez, uma cascata de liquidações leva o preço pro chão em minutos.'},
+  {d:'2022-06-13',nome:'Celsius congela os saques',ctx:'A Celsius, uma "poupança cripto" gigante, trava o dinheiro dos clientes e o pânico se espalha.'},
+  {d:'2022-11-09',nome:'A FTX quebra',ctx:'A segunda maior corretora do mundo afunda em dias, depois que a Binance desiste de comprá-la.'},
+  {d:'2024-08-05',nome:'Pânico global do iene',ctx:'O Japão sobe juros, o carry trade em iene desmonta e bolsas e bitcoin caem juntos na segunda-feira.'}
+];
+let RP=null;   // replay em andamento
+const klines1d=t=>api('/px/spot/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime='+t+'&limit=1');
+function fecharReplay(){
+  if(RP){ cancelAnimationFrame(RP.raf); RP.fim=true; try{ RP.mestre.gain.setTargetAtTime(0,ctxAudio().currentTime,.15); setTimeout(()=>RP&&RP.mestre&&RP.mestre.disconnect(),600); }catch(e){} }
+  RP=null; const el=$('#replayTela'); el.hidden=true; el.innerHTML='';
+}
+async function abrirReplay(){
+  const el=$('#replayTela'); el.hidden=false;
+  el.innerHTML='<div class="rpEscolha"><div class="horoTit" style="color:#ff6b78">📉 REPLAY DO CRASH</div>'+
+    '<div class="st" style="text-align:center;margin:6px 0 14px">Escolha o dia pra reviver. Vela de 5 minutos, um dia inteiro em meio minuto.</div>'+
+    '<div id="rpLista"><div class="st" style="text-align:center"><span class="spin"></span>buscando os piores dias…</div></div>'+
+    '<div class="horoPe"><button class="btn" id="rpFechar">fechar</button></div></div>';
+  $('#rpFechar').onclick=fecharReplay;
+  // pior dia dos últimos 30 (sem contar hoje, que ainda não fechou)
+  const mes=await api('/px/spot/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=31');
+  let pior=null;
+  if(Array.isArray(mes)) mes.slice(0,-1).forEach(k=>{ const q=(+k[3]/+k[1]-1)*100; if(!pior||q<pior.q) pior={t:+k[0],q}; });
+  const itens=[];
+  if(pior) itens.push({d:new Date(pior.t).toISOString().slice(0,10),nome:'O pior dia do último mês',ctx:'O tombo mais recente que valeu o replay: o dia de maior queda dos últimos 30 dias.',q:pior.q});
+  const dias=await Promise.all(CRASHES.map(c=>klines1d(Date.parse(c.d+'T00:00:00Z'))));
+  CRASHES.forEach((c,i)=>{ const k=dias[i]&&dias[i][0]; itens.push({...c,q:k?(+k[3]/+k[1]-1)*100:null}); });
+  if(!$('#rpLista')) return;
+  $('#rpLista').innerHTML=itens.map((c,i)=>'<button class="rpItem" data-i="'+i+'"><span class="rpData">'+c.d.split('-').reverse().join('/')+'</span>'+
+    '<span class="rpNome">'+escHtml(c.nome)+'</span><b class="sell">'+(c.q!=null?nf(c.q,1)+'%':'')+'</b></button>').join('');
+  $('#rpLista').querySelectorAll('.rpItem').forEach(b=>b.onclick=()=>tocarReplay(itens[+b.dataset.i]));
+}
+function somTum(c,dest,t){ tom(c,dest,{f:95,para:40,t,d:.22,tipo:'sine',v:.55,r:.16}); chiado(c,dest,{t,d:.08,v:.12,tipo:'lowpass',f:500}); }
+async function tocarReplay(item){
+  const el=$('#replayTela'); el.hidden=false;
+  el.innerHTML='<div class="st" style="text-align:center"><span class="spin"></span>carregando '+escHtml(item.nome)+'…</div>';
+  const t0=Date.parse(item.d+'T00:00:00Z');
+  const k=await api('/px/spot/api/v3/klines?symbol=BTCUSDT&interval=5m&startTime='+t0+'&endTime='+(t0+864e5-1)+'&limit=1000');
+  if(!Array.isArray(k)||!k.length){ el.innerHTML='<div class="rpEscolha"><div class="st">Não consegui as velas desse dia.</div><div class="horoPe"><button class="btn" id="rpFechar">fechar</button></div></div>'; $('#rpFechar').onclick=fecharReplay; return; }
+  const velas=k.map(x=>({t:+x[0],o:+x[1],h:+x[2],l:+x[3],c:+x[4]}));
+  const abre=velas[0].o, fundo=Math.min(...velas.map(v=>v.l)), iFundo=velas.findIndex(v=>v.l===fundo);
+  el.innerHTML='<div class="rpPalco">'+
+    '<div class="rpCab"><div><div class="rpTit">'+escHtml(item.nome)+'</div><div class="st">'+item.d.split('-').reverse().join('/')+' · '+escHtml(item.ctx)+'</div></div>'+
+      '<div class="rpNums"><b id="rpPreco">$'+nf(abre,0)+'</b><span id="rpVar">0,00%</span><span class="st" id="rpHora">00:00 UTC</span></div></div>'+
+    '<div class="rpGraf"><canvas id="rpCv"></canvas><div class="rpFlash" id="rpFlash"></div></div>'+
+    '<div class="rpBarra"><button class="btn" id="rpPausa">pausar</button>'+
+      '<span class="seg2" id="rpVel"><button data-v="1" class="on">1×</button><button data-v="2">2×</button><button data-v="4">4×</button></span>'+
+      '<span class="st" id="rpPior" style="margin-left:auto">pior momento até agora: 0,0%</span>'+
+      '<button class="btn" id="rpOutro">outro dia</button><button class="btn" id="rpFechar">fechar</button></div>'+
+  '</div>';
+  const c=ctxAudio(), mestre=c.createGain(); mestre.gain.value=.85; mestre.connect(c.destination);
+  RP={velas,i:0,acum:0,vel:1,pausa:false,raf:0,ult:0,mestre,abre,fundo,iFundo,minAte:abre,somGrito:0,somTum:0,somCaixa:0,trombone:false,fim:false};
+  $('#rpFechar').onclick=fecharReplay;
+  $('#rpOutro').onclick=()=>{ const m=RP&&RP.mestre; if(RP){ cancelAnimationFrame(RP.raf); RP.fim=true; } RP=null; try{ m&&m.disconnect(); }catch(e){} abrirReplay(); };
+  $('#rpPausa').onclick=()=>{ if(!RP) return; RP.pausa=!RP.pausa; $('#rpPausa').textContent=RP.pausa?'continuar':'pausar'; };
+  $('#rpVel').onclick=e=>{ const b=e.target.closest('button'); if(!b||!RP) return; RP.vel=+b.dataset.v; [...$('#rpVel').children].forEach(x=>x.classList.toggle('on',x===b)); };
+  const MS=36000/velas.length;          // um dia inteiro em ~36 s na velocidade 1×
+  const passo=ts=>{
+    if(!RP||RP.fim) return;
+    const dt=RP.ult?ts-RP.ult:16; RP.ult=ts;
+    if(!RP.pausa&&RP.i<velas.length){
+      RP.acum+=dt*RP.vel;
+      while(RP.acum>=MS&&RP.i<velas.length){ RP.acum-=MS; novaVela(RP.velas[RP.i],RP.i); RP.i++; }
+    }
+    desenharReplay();
+    if(RP.i>=velas.length){ fimReplay(item); return; }
+    RP.raf=requestAnimationFrame(passo);
+  };
+  RP.raf=requestAnimationFrame(passo);
+}
+function flashReplay(txt,cls){ const f=$('#rpFlash'); if(!f) return; f.className='rpFlash '+(cls||''); f.textContent=txt; void f.offsetWidth; f.classList.add('vivo'); }
+function novaVela(v,i){
+  const R=RP, c=ctxAudio(), agora=performance.now(), q=(v.c/v.o-1)*100;
+  const varDia=(v.c/R.abre-1)*100;
+  $('#rpPreco').textContent='$'+nf(v.c,0);
+  const vr=$('#rpVar'); vr.textContent=(varDia>=0?'+':'')+nf(varDia,2)+'%'; vr.className=varDia>=0?'buy':'sell';
+  $('#rpHora').textContent=new Date(v.t).toISOString().slice(11,16)+' UTC';
+  if(v.l<R.minAte){
+    const antes=(R.minAte/R.abre-1)*100, agoraQ=(v.l/R.abre-1)*100;
+    R.minAte=v.l;
+    $('#rpPior').textContent='pior momento até agora: '+nf(agoraQ,1)+'%';
+    if(antes-agoraQ>=1) flashReplay('NOVA MÍNIMA $'+nf(v.l,0)+' ('+nf(agoraQ,1)+'%)','queda');
+  }
+  // som: grito nas velas mais feias, "tum" nas vermelhas médias, caixa registradora nas verdes fortes
+  if(q<=-1.5&&agora-R.somGrito>3000){ R.somGrito=agora; somGrito(c,R.mestre,c.currentTime+.01); document.body.classList.add('fx-pop'); setTimeout(()=>document.body.classList.remove('fx-pop'),600); }
+  else if(q<=-.6&&agora-R.somTum>350){ R.somTum=agora; somTum(c,R.mestre,c.currentTime+.01); }
+  else if(q>=1.2&&agora-R.somCaixa>1500){ R.somCaixa=agora; somCaixa(c,R.mestre,c.currentTime+.01); flashReplay('REPIQUE +'+nf(q,1)+'% EM 5 MIN','alta'); }
+  if(i===R.iFundo&&!R.trombone){ R.trombone=true; somTrombone(c,R.mestre,c.currentTime+.2); flashReplay('FUNDO DO POÇO: $'+nf(R.fundo,0),'fundo'); }
+}
+function desenharReplay(){
+  const cv=$('#rpCv'); if(!cv||!RP) return;
+  const {c,w,h}=fit(cv), V=RP.velas, n=V.length;
+  const mx=Math.max(...V.map(v=>v.h)), mn=Math.min(...V.map(v=>v.l)), pad=(mx-mn)*.06;
+  const Y=p=>8+(1-(p-(mn-pad))/((mx+pad)-(mn-pad)))*(h-28), X=i=>6+i*(w-60)/n, lg=Math.max(1,(w-60)/n*.7);
+  // linha da abertura
+  c.strokeStyle='rgba(255,255,255,.18)'; c.setLineDash([4,4]); c.beginPath(); c.moveTo(0,Y(RP.abre)); c.lineTo(w-54,Y(RP.abre)); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#7b8798'; c.font='10px ui-monospace,monospace'; c.fillText('abertura $'+nf(RP.abre,0),w-52,Y(RP.abre)+3);
+  for(let i=0;i<RP.i;i++){
+    const v=V[i], cor=v.c>=v.o?'#19e08a':'#ff4256';
+    c.strokeStyle=cor; c.beginPath(); c.moveTo(X(i)+lg/2,Y(v.h)); c.lineTo(X(i)+lg/2,Y(v.l)); c.stroke();
+    c.fillStyle=cor; const a=Y(Math.max(v.o,v.c)), b=Y(Math.min(v.o,v.c)); c.fillRect(X(i),a,lg,Math.max(1,b-a));
+  }
+  if(RP.i){ const v=V[RP.i-1]; c.fillStyle='#fff'; c.fillText('$'+nf(v.c,0),Math.min(X(RP.i-1)+8,w-52),Y(v.c)+3); }
+  c.fillStyle='#4d5a6e'; for(let hh=0;hh<=24;hh+=6){ const i=Math.min(n-1,Math.round(hh*n/24)); c.fillText(String(hh).padStart(2,'0')+'h',X(i),h-4); }
+}
+function fimReplay(item){
+  const R=RP; if(!R) return;
+  const V=R.velas, fecho=V[V.length-1].c, iF=R.iFundo;
+  const topo=Math.max(...V.slice(0,iF+1).map(v=>v.h)), queda=(R.fundo/topo-1)*100;
+  const minutos=(V[iF].t-V[V.slice(0,iF+1).findIndex(v=>v.h===topo)].t)/6e4;
+  const fechou=(fecho/R.abre-1)*100;
+  const piada=queda<-30?'Quem estava alavancado nesse dia virou estatística.':queda<-15?'Muita gente jurou que ia vender "no próximo repique". O repique não veio.':'Doeu, mas quem segurou firme nem lembra mais.';
+  const el=$('#replayTela'); if(!el) return;
+  el.querySelector('.rpBarra').insertAdjacentHTML('beforebegin','<div class="rpFim"><b class="sell">Do topo ao fundo: '+nf(queda,1)+'% em '+(minutos>=60?Math.floor(minutos/60)+'h'+String(Math.round(minutos%60)).padStart(2,'0'):Math.round(minutos)+' min')+'.</b> '+
+    'Fechou o dia em '+(fechou>=0?'+':'')+nf(fechou,1)+'%. '+escHtml(piada)+
+    ' <button class="btn" id="rpDeNovo">rever</button></div>');
+  $('#rpDeNovo').onclick=()=>tocarReplay(item);
+  $('#rpPausa').disabled=true;
+}
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#replayTela').hidden) fecharReplay(); });
 
 /* ---------- views ---------- */
 function mostrarView(v){
