@@ -327,7 +327,8 @@ http.createServer(async (req, res) => {
     const nome = (url.match(/^\/api\/botoes\/(\w+)/) || [])[1];
     if (nome && req.method === 'POST') {
       if (!pedidoDoPainel(req)) { res.writeHead(403); return res.end('forbidden'); }
-      try { return json(res, BOTOES.apertar(nome)); }
+      const q = new URLSearchParams(url.split('?')[1] || '');
+      try { return json(res, BOTOES.apertar(nome, { n: q.get('n') || 1, resultado: q.get('r') })); }
       catch (e) { return json(res, { error: String(e.message || e) }); }
     }
     return json(res, BOTOES.resumo());

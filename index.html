@@ -189,6 +189,35 @@
   .ibtn.panico{--sombra:#1b5b8a} .ibtn.panico i{background:radial-gradient(circle at 50% 35%,#8fdcff,#2b8fd6 60%,#1f6aa3)}
   .ibtn.rage{--sombra:#8a1111} .ibtn.rage i{background:radial-gradient(circle at 50% 35%,#ff8c8c,#e11d2a 60%,#a50f1a)}
   .ibtn.money{--sombra:#16691f} .ibtn.money i{background:radial-gradient(circle at 50% 35%,#a6ff9e,#2fbf4a 60%,#1c8a31)}
+  .ibtn.assopra{--sombra:#8a2d6e} .ibtn.assopra i{background:radial-gradient(circle at 50% 35%,#ffc2ec,#e75bbd 60%,#a8327f);transition:transform .12s}
+  .ibtn.moeda{--sombra:#8a6510} .ibtn.moeda i{background:radial-gradient(circle at 50% 35%,#fff1a8,#f2c230 55%,#b8860b)}
+  .ibtn.moeda i::before{content:"₿";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 24px var(--ui);color:rgba(120,80,0,.55)}
+  /* cinco botoes: um pouco menores pra caber no canto */
+  .ibtn i{width:48px;height:48px} .instantBotoes{gap:12px}
+  #px.soprado{text-shadow:0 0 14px rgba(25,224,138,.7);transition:text-shadow .2s}
+  .soproFaixa{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:65;pointer-events:none;
+    background:rgba(40,8,32,.9);border:1px solid #e75bbd;border-radius:22px;padding:6px 18px;font:12px var(--mono);color:#ffe3f5;
+    display:flex;align-items:center;gap:10px;white-space:nowrap;max-width:calc(100vw - 30px);overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .soproFaixa[hidden]{display:none}
+  .soproFaixa .balao{line-height:1;transition:font-size .1s}
+  .soproFaixa.perigo{border-color:#ff4256;animation:grita .2s steps(2) infinite}
+  .soproFaixa.estourou{background:rgba(60,4,8,.94);border-color:#ff4256;color:#ffd2d2}
+  body.fx-pop #app{animation:treme .1s linear 6}
+  .fx-moeda{background:radial-gradient(circle at 50% 42%,rgba(90,70,10,.55),rgba(6,8,14,.94) 70%)}
+  .moedaCena{text-align:center;color:#fff6d6}
+  .moedaTit{font:800 13px var(--ui);letter-spacing:4px;color:#f2c230}
+  .moedaPalco{position:relative;height:300px;display:flex;align-items:flex-end;justify-content:center;perspective:900px}
+  .moedaGira{position:relative;width:150px;height:150px;margin-bottom:60px;transform-style:preserve-3d}
+  .moedaGira .face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:inset 0 0 0 6px rgba(255,255,255,.25),inset 0 -8px 16px rgba(0,0,0,.3),0 0 30px rgba(242,194,48,.35)}
+  .moedaGira .face b{font:900 58px/1 var(--ui)} .moedaGira .face span{font:800 16px var(--ui);letter-spacing:3px;margin-top:4px}
+  .moedaGira .sim{background:radial-gradient(circle at 40% 30%,#fff3b0,#f2c230 55%,#a9780a);color:#6b4600}
+  .moedaGira .nao{background:radial-gradient(circle at 40% 30%,#f1f1f1,#b9b9b9 55%,#6d6d6d);color:#3a3a3a;transform:rotateY(180deg)}
+  .moedaSombra{position:absolute;bottom:34px;width:120px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);filter:blur(4px)}
+  .moedaRes{font:900 54px var(--ui);min-height:64px;letter-spacing:2px}
+  .moedaRes.sim{color:#4ade80;text-shadow:0 0 24px rgba(74,222,128,.5)} .moedaRes.nao{color:#ff5a66;text-shadow:0 0 24px rgba(255,90,102,.5)}
+  .moedaFrase{font:15px/1.6 var(--ui);min-height:26px;max-width:520px;margin:6px auto 18px;padding:0 20px}
+  .moedaBotoes{display:flex;gap:10px;justify-content:center}
   .instantRodape{display:flex;gap:10px;align-items:center;font:10px var(--mono);color:var(--dim);background:rgba(8,12,20,.72);padding:3px 10px;border-radius:8px}
   .instantRodape .cPan{color:#5cc0ff} .instantRodape .cRag{color:#ff5a66} .instantRodape .cMon{color:#4ade80}
   #instantCfg,#instantMin{cursor:pointer;opacity:.6} #instantCfg:hover,#instantMin:hover{opacity:1}
@@ -379,6 +408,8 @@
     <button class="ibtn panico" data-b="panico" title="respira, vai passar"><i></i><span>PÂNICO</span><em id="cnt-panico">0</em></button>
     <button class="ibtn rage" data-b="rage" title="deixa sair"><i></i><span>RAGE</span><em id="cnt-rage">0</em></button>
     <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span>MONEY BABY</span><em id="cnt-money">0</em></button>
+    <button class="ibtn assopra" data-b="assopra" title="clica rápido e sem parar: o gráfico sobe. Só na tela, é claro"><i></i><span>ASSOPRA</span><em id="cnt-assopra">0</em></button>
+    <button class="ibtn moeda" data-b="moeda" title="cara ou coroa pra decidir"><i></i><span>SORTE?</span><em id="cnt-moeda">0</em></button>
   </div>
   <div class="instantRodape"><span id="instantPe">…</span><span id="instantCfg" title="trocar os sons">⚙</span><span id="instantMin" title="recolher / mostrar os botões">▾</span></div>
   <div id="instantSons" class="instantSons" hidden></div>
@@ -741,6 +772,7 @@ function setPreco(p){
   el.style.color=ultimo==null?'var(--pri)':(p>ultimo?'var(--buy)':p<ultimo?'var(--sell)':el.style.color);
   ultimo=p;
   if(S.tec) pintarNiveis();
+  if(typeof SOPRO!=='undefined'&&SOPRO.v) pintarSopro();
 }
 setInterval(()=>{ if(!S.nextFund)return; const ms=S.nextFund-Date.now(); if(ms<0)return;
   const h=Math.floor(ms/3.6e6),m=Math.floor(ms%3.6e6/6e4),s=Math.floor(ms%6e4/1000);
@@ -879,15 +911,28 @@ async function carregarMercados(){
     const closes=k.map(x=>+x[4]);
     return { s, closes, chg:(closes.at(-1)/closes[0]-1)*100 };
   }))).filter(Boolean);
-  $('#mkts').innerHTML=linhas.map((l,i)=>`<div class="mkt">
+  S.mercados=linhas;
+  pintarMercados(true);
+}
+// desenha as mini-linhas; com o modo assopro ligado, a ponta de cada uma sobe junto
+function pintarMercados(recriar){
+  const linhas=S.mercados||[]; if(!linhas.length) return;
+  const f=typeof SOPRO!=='undefined'?SOPRO.v:0;
+  if(recriar||!document.getElementById('spk0')){
+    $('#mkts').innerHTML=linhas.map((l,i)=>`<div class="mkt">
       <span class="t">${l.s.replace('USDT','')}</span><canvas id="spk${i}"></canvas>
-      <span class="c ${l.chg>=0?'buy':'sell'}">${l.chg>=0?'+':''}${l.chg.toFixed(2)}%</span></div>`).join('');
+      <span class="c" id="spkc${i}"></span></div>`).join('');
+  }
   linhas.forEach((l,i)=>{
+    const closes=f?soprarNumeros(l.closes,f):l.closes;
+    const chg=(closes.at(-1)/closes[0]-1)*100;
+    const tx=document.getElementById('spkc'+i);
+    if(tx){ tx.className='c '+(chg>=0?'buy':'sell'); tx.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'%'; }
     const cv=document.getElementById('spk'+i); if(!cv) return;
     const {c,w,h}=fit(cv);
-    const mn=Math.min(...l.closes),mx=Math.max(...l.closes),rg=mx-mn||1;
-    c.beginPath(); c.lineWidth=1.3; c.strokeStyle=l.chg>=0?'#19e08a':'#ff4256';
-    l.closes.forEach((v,j)=>{ const x=j/(l.closes.length-1)*w, y=h-((v-mn)/rg)*(h-4)-2; j?c.lineTo(x,y):c.moveTo(x,y); });
+    const mn=Math.min(...closes),mx=Math.max(...closes),rg=mx-mn||1;
+    c.beginPath(); c.lineWidth=1.3; c.strokeStyle=chg>=0?'#19e08a':'#ff4256';
+    closes.forEach((v,j)=>{ const x=j/(closes.length-1)*w, y=h-((v-mn)/rg)*(h-4)-2; j?c.lineTo(x,y):c.moveTo(x,y); });
     c.stroke();
   });
 }
@@ -949,7 +994,7 @@ function lerMercado(){
 
 /* ---------- gráfico empilhado ---------- */
 const PAINEIS=[
-  {id:'price', nome:'preço', cor:'#ffffff', h:1.3, fmt:v=>'$'+nf(v,0), dados:()=>S.price},
+  {id:'price', nome:'preço', cor:'#ffffff', h:1.3, fmt:v=>'$'+nf(v,0), dados:()=>soprarSerie(S.price)},
   {id:'oi', nome:'open interest', cor:'#39d4ff', h:.85, fmt:v=>nf(v/1000,1)+'k BTC', dados:()=>S.oiSerie},
   {id:'lsr', nome:'long/short', cor:'#c084fc', h:.7, fmt:v=>v.toFixed(2), ref:1, dados:()=>S.lsrSerie},
   {id:'liq', nome:'liquidações', cor:'#ff4256', h:.5, fmt:v=>usd(v), barras:true, dados:()=>serieLiq()}
@@ -2679,18 +2724,20 @@ function pararHumor(){
   clearInterval(f.musica); clearTimeout(f.fim); cancelAnimationFrame(f.raf); (f.timers||[]).forEach(clearInterval);
   if(f.mestre){ try{ const c=ctxAudio(); f.mestre.gain.cancelScheduledValues(c.currentTime); f.mestre.gain.setTargetAtTime(0,c.currentTime,.25); setTimeout(()=>f.mestre.disconnect(),1200); }catch(e){} }
   if(f.audio){ f.audio.pause(); f.audio.src=''; }
-  document.body.classList.remove('fx-rage','fx-money','fx-panico');
+  document.body.classList.remove('fx-rage','fx-money','fx-panico','fx-moeda');
   const ov=$('#fxOverlay'); ov.classList.add('saindo');
-  setTimeout(()=>{ ov.hidden=true; ov.className='fxOverlay'; ov.innerHTML=''; },450);
+  const ficha=fxFicha;
+  setTimeout(()=>{ if(ficha!==fxFicha) return; ov.hidden=true; ov.className='fxOverlay'; ov.innerHTML=''; },450);
 }
-function novoEfeito(tipo){
-  pararHumor();
+let fxFicha=0;
+function novoEfeito(tipo,dur){
+  pararHumor(); fxFicha++;
   const c=ctxAudio(), mestre=c.createGain(); mestre.gain.value=.9; mestre.connect(c.destination);
   fxAtual={tipo,mestre,timers:[]};
   const ov=$('#fxOverlay'); ov.hidden=false; ov.className='fxOverlay fx-'+tipo;
   ov.onclick=e=>{ if(e.target.closest('.fxFicar')) return; pararHumor(); };
   document.body.classList.add('fx-'+tipo);
-  fxAtual.fim=setTimeout(pararHumor,HUMOR[tipo].dur);
+  fxAtual.fim=setTimeout(pararHumor,dur||(HUMOR[tipo]&&HUMOR[tipo].dur)||10000);
   return {c,mestre,ov};
 }
 const sorteia=a=>a[Math.floor(Math.random()*a.length)];
@@ -2816,17 +2863,26 @@ function efeitoMoney(){
 async function carregarBotoes(){ const j=await api('/api/botoes'); if(j&&!j.error){ S.botoes=j; pintarContador(); } }
 function pintarContador(){
   const b=S.botoes; if(!b) return;
-  for(const n of Object.keys(HUMOR)){ const el=$('#cnt-'+n); if(el) el.textContent=b[n]?b[n].total:0; }
-  const hoje=Object.keys(HUMOR).map(n=>(b[n]&&b[n].hoje)||0), tot=Object.keys(HUMOR).reduce((s,n)=>s+((b[n]&&b[n].total)||0),0);
-  const humor=hoje[2]>hoje[1]+hoje[0]?'o dia está verde':hoje[1]>hoje[2]?'dia difícil, hein':hoje[0]>0?'respira':'';
-  $('#instantPe').innerHTML=`hoje <b class="cPan">${hoje[0]}</b> · <b class="cRag">${hoje[1]}</b> · <b class="cMon">${hoje[2]}</b> · total ${tot}${humor?` · <span class="dim2">${humor}</span>`:''}`;
+  const tot=n=>(b[n]&&b[n].total)||0, hj=n=>(b[n]&&b[n].hoje)||0;
+  for(const n of ['panico','rage','money','assopra','moeda']){ const el=$('#cnt-'+n); if(el) el.textContent=tot(n)>999?Math.round(tot(n)/1000)+'k':tot(n); }
+  const hoje=['panico','rage','money'].map(hj);
+  const humor=hoje[2]>hoje[1]+hoje[0]?'o dia está verde':hoje[1]>hoje[2]?'dia difícil, hein':hoje[0]>0?'respira':hj('assopra')>40?'assopra que passa':'';
+  const m=b.moeda||{};
+  $('#instantPe').innerHTML=`hoje <b class="cPan">${hoje[0]}</b> · <b class="cRag">${hoje[1]}</b> · <b class="cMon">${hoje[2]}</b>`+
+    ` · 🎈${hj('assopra')} · 🪙${hj('moeda')}${m.hoje?` <span class="dim2">(sim ${m.simHoje||0} · não ${m.naoHoje||0})</span>`:''}`+
+    `${humor?` · <span class="dim2">${humor}</span>`:''}`;
 }
-async function apertarHumor(nome){
-  ({panico:efeitoPanico,rage:efeitoRage,money:efeitoMoney})[nome]();
+async function contarBotao(nome,extra){
   try{
-    const r=await fetch('/api/botoes/'+nome,{method:'POST',headers:{'x-btc-radar':'1'}});
+    const r=await fetch('/api/botoes/'+nome+(extra||''),{method:'POST',headers:{'x-btc-radar':'1'}});
     const j=await r.json(); if(!j.error){ S.botoes=j; pintarContador(); }
   }catch(e){}
+}
+function apertarHumor(nome){
+  if(nome==='assopra') return assoprar();
+  if(nome==='moeda') return jogarMoeda();
+  ({panico:efeitoPanico,rage:efeitoRage,money:efeitoMoney})[nome]();
+  contarBotao(nome);
 }
 document.querySelectorAll('#instant .ibtn').forEach(b=>b.onclick=()=>apertarHumor(b.dataset.b));
 // recolher: some com os botões e deixa só o rodapé com o contador
@@ -2861,6 +2917,142 @@ $('#instantCfg').onclick=()=>{
     r.readAsDataURL(f);
   });
 };
+
+/* ================= ASSOPRA: o gráfico sobe no sopro ================= */
+// Só a camada de desenho muda. S.last, S.price, alertas, snapshots e análises seguem
+// vendo o preço real — o sopro é um multiplicador que só existe na hora de pintar.
+const SOPRO={v:0,ult:0,raf:0,sequencia:0,pendente:0,envio:0,marco:-1,pintado:0,tempo:0};
+const MARCOS=[[.03,'tá subindo 🎈'],[.08,'o grupo do zap já está comemorando'],[.14,'rumo à lua 🚀'],
+  [.2,'o analista do YouTube está gravando um vídeo agora'],[.28,'isso aí é bolha, hein'],[.36,'vai estourar… vai estourar…']];
+const ESTOURO=.44;
+function soprarNumeros(arr,f){
+  const n=arr.length, ini=Math.floor(n*.55);
+  return arr.map((v,i)=> i<ini?v: v*(1+f*Math.pow((i-ini)/Math.max(1,n-1-ini),1.7)));
+}
+function soprarSerie(serie){
+  if(!SOPRO.v||!serie||serie.length<3) return serie;
+  const vs=soprarNumeros(serie.map(p=>p.v),SOPRO.v);
+  return serie.map((p,i)=>({t:p.t,v:vs[i]}));
+}
+function somSopro(f){
+  const c=ctxAudio(), t=c.currentTime+.01;
+  const s=c.createBufferSource(); s.buffer=ruidoBuf(c);
+  const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2;
+  bp.frequency.setValueAtTime(500,t); bp.frequency.exponentialRampToValueAtTime(2200,t+.26);
+  const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.04); g.gain.exponentialRampToValueAtTime(.001,t+.3);
+  s.connect(bp).connect(g).connect(c.destination); s.start(t,Math.random()); s.stop(t+.32);
+  tom(c,c.destination,{f:280+f*1600,para:420+f*2400,t,d:.18,tipo:'sine',v:.05});
+}
+function somEstouro(){
+  const c=ctxAudio(), t=c.currentTime+.01;
+  chiado(c,c.destination,{t,d:.35,v:.6,tipo:'lowpass',f:2500});
+  tom(c,c.destination,{f:120,para:35,t,d:.4,tipo:'sine',v:.6});
+  somTrombone(c,c.destination,t+.5);
+}
+function faixaSopro(txt,classe){
+  let el=$('#soproFaixa');
+  if(!el){ el=document.createElement('div'); el.id='soproFaixa'; el.className='soproFaixa'; document.body.appendChild(el); }
+  el.className='soproFaixa '+(classe||''); el.hidden=false; el.innerHTML=txt;
+}
+function pintarSopro(){
+  const f=SOPRO.v;
+  if(S.last!=null){
+    const px=$('#px'); px.textContent=nf(S.last*(1+f),1); px.style.color='var(--buy)'; px.classList.add('soprado');
+  }
+  if(S.chg!=null){
+    const ch=((1+S.chg/100)*(1+f)-1)*100;
+    $('#chg').innerHTML=`<span class="buy">▲${Math.abs(ch).toFixed(2)}%</span>`;
+  }
+  let marco=-1; MARCOS.forEach(([lim],i)=>{ if(f>=lim) marco=i; });
+  const frase=marco>=0?MARCOS[marco][1]:'assopra mais';
+  faixaSopro(`<span class="balao" style="font-size:${18+f*90}px">🎈</span>
+    <b>MODO ASSOPRO</b> +${nf(f*100,1)}% de puro ar <span class="dim2">· ${frase} · preço de verdade: $${nf(S.last,1)}</span>`,
+    f>=.28?'perigo':'');
+  const agora=performance.now();
+  if(agora-SOPRO.pintado>60){ SOPRO.pintado=agora; desenharStack(); pintarMercados(); }
+}
+function fimSopro(){
+  SOPRO.v=0; cancelAnimationFrame(SOPRO.raf); SOPRO.raf=0;
+  const px=$('#px'); px.classList.remove('soprado'); px.style.color='';
+  if(S.last!=null) px.textContent=nf(S.last,1);
+  if(S.chg!=null) $('#chg').innerHTML=`<span class="${S.chg>=0?'buy':'sell'}">${S.chg>=0?'▲':'▼'}${Math.abs(S.chg).toFixed(2)}%</span>`;
+  desenharStack(); pintarMercados();
+}
+function loopSopro(ts){
+  const dt=SOPRO.tempo?ts-SOPRO.tempo:16; SOPRO.tempo=ts;
+  // o ar vaza: um segundo depois do último sopro, cai pela metade a cada 2,5 s, e perto do
+  // fim um vazamento fixo de 0,4%/s termina o serviço (só a metade deixaria uma cauda de meio minuto)
+  if(performance.now()-SOPRO.ult>1000) SOPRO.v-=Math.max(SOPRO.v*(1-Math.pow(.5,dt/2500)),.004*dt/1000);
+  if(SOPRO.v<.0008){ fimSopro(); const el=$('#soproFaixa'); if(el) el.hidden=true; SOPRO.tempo=0; return; }
+  pintarSopro(); SOPRO.raf=requestAnimationFrame(loopSopro);
+}
+function enviarSopros(){
+  clearTimeout(SOPRO.envio);
+  SOPRO.envio=setTimeout(()=>{ const n=SOPRO.pendente; SOPRO.pendente=0; if(n) contarBotao('assopra','?n='+n); },1200);
+}
+function assoprar(){
+  const agora=performance.now();
+  SOPRO.sequencia=agora-SOPRO.ult<450?SOPRO.sequencia+1:0;
+  SOPRO.ult=agora;
+  // quanto mais rápido e seguido, mais sobe
+  SOPRO.v+=.011*(1+Math.min(SOPRO.sequencia,20)*.13);
+  SOPRO.pendente++; enviarSopros();
+  somSopro(SOPRO.v);
+  const b=document.querySelector('.ibtn.assopra i'); if(b){ b.style.transform=`scale(${1+Math.min(SOPRO.v,.4)*.9})`; setTimeout(()=>b.style.transform='',160); }
+  if(SOPRO.v>=ESTOURO) return estourarBolha();
+  if(!SOPRO.raf){ SOPRO.tempo=0; SOPRO.raf=requestAnimationFrame(loopSopro); }
+}
+function estourarBolha(){
+  const pico=SOPRO.v;
+  fimSopro(); somEstouro();
+  document.body.classList.add('fx-pop'); setTimeout(()=>document.body.classList.remove('fx-pop'),700);
+  faixaSopro(`<span style="font-size:30px">💥</span> <b>A BOLHA ESTOUROU</b> <span class="dim2">· subiu ${nf(pico*100,1)}% no ar e voltou pro preço de verdade. É assim que bolha funciona.</span>`,'estourou');
+  setTimeout(()=>{ const el=$('#soproFaixa'); if(el&&!SOPRO.v) el.hidden=true; },3800);
+}
+
+/* ================= MOEDA: estou com sorte? ================= */
+const FRASES_MOEDA={
+  sim:['A moeda disse sim. A moeda também não paga o seu prejuízo.','Sim! (a moeda tem zero anos de experiência em trading)',
+    'Os astros alinharam. Os candles, não sei.','Sim. Agora coloca um stop, que sorte também acaba.','Sorte confirmada por um pedaço de metal. Parabéns?'],
+  nao:['Não. E a moeda nem sabe o que você ia fazer.','Hoje não. Vai tomar um café.','A moeda recomenda distância da alavancagem.',
+    'Não. Mas joga de novo que ela muda de ideia — igualzinho a você.','Não. A moeda está protegendo você de você mesmo.']
+};
+function somMoedaGiro(c,dest,t){ for(let i=0;i<7;i++) tom(c,dest,{f:2400+i*120,t:t+i*.22,d:.06,tipo:'triangle',v:.05}); }
+function somMoedaCai(c,dest,t){ tom(c,dest,{f:3200,t,d:.25,tipo:'triangle',v:.12,r:.2}); tom(c,dest,{f:4700,t:t+.05,d:.35,tipo:'sine',v:.06,r:.3}); chiado(c,dest,{t,d:.08,v:.15,tipo:'highpass',f:5000}); }
+function jogarMoeda(){
+  // crypto em vez de Math.random: se é pra decidir no cara ou coroa, que seja justo
+  const r=crypto.getRandomValues(new Uint32Array(1))[0]%2===0?'sim':'nao';
+  const {c,mestre,ov}=novoEfeito('moeda',16000);
+  const giro=fxFicha;   // se jogar de novo antes de cair, este resultado nao vale mais
+  ov.innerHTML=`<div class="moedaCena">
+    <div class="moedaTit">ESTOU COM SORTE?</div>
+    <div class="moedaPalco"><div class="moedaGira" id="moeda">
+      <div class="face sim"><b>₿</b><span>SIM</span></div>
+      <div class="face nao"><b>🐻</b><span>NÃO</span></div>
+    </div><div class="moedaSombra" id="moedaSombra"></div></div>
+    <div class="moedaRes" id="moedaRes">&nbsp;</div>
+    <div class="moedaFrase" id="moedaFrase">&nbsp;</div>
+    <div class="moedaBotoes fxFicar"><button class="btn primary" id="moedaDeNovo">jogar de novo</button><button class="btn" id="moedaFechar">fechar</button></div>
+    <div class="calmoPe">não é recomendação de investimento. é uma moeda.</div>
+  </div>`;
+  const t=c.currentTime+.02; somMoedaGiro(c,mestre,t);
+  const final=(r==='sim'?0:180)+360*6;
+  $('#moeda').animate([
+    {transform:'translateY(0) rotateY(0deg) scale(1)'},
+    {transform:'translateY(-170px) rotateY('+(final*.55)+'deg) scale(1.15)',offset:.45},
+    {transform:'translateY(0) rotateY('+final+'deg) scale(1)'}
+  ],{duration:1800,easing:'cubic-bezier(.25,.6,.35,1)',fill:'forwards'});
+  $('#moedaSombra').animate([{transform:'scale(1)',opacity:.5},{transform:'scale(.45)',opacity:.18,offset:.45},{transform:'scale(1)',opacity:.5}],{duration:1800,fill:'forwards'});
+  setTimeout(()=>{
+    if(!fxAtual||fxAtual.tipo!=='moeda'||giro!==fxFicha) return;
+    somMoedaCai(c,mestre,c.currentTime+.01);
+    const res=$('#moedaRes'); res.textContent=r==='sim'?'SIM!':'NÃO.'; res.className='moedaRes '+r;
+    $('#moedaFrase').textContent=sorteia(FRASES_MOEDA[r]);
+    contarBotao('moeda','?r='+r);
+  },1800);
+  $('#moedaDeNovo').onclick=e=>{ e.stopPropagation(); jogarMoeda(); };
+  $('#moedaFechar').onclick=e=>{ e.stopPropagation(); pararHumor(); };
+}
 
 /* ---------- views ---------- */
 function mostrarView(v){
