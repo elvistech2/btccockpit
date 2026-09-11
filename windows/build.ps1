@@ -106,16 +106,19 @@ Write-Host "    ok $([math]::Round((Get-Item $exeSaida).Length / 1KB)) KB"
 
 # ------------------------------------------------------------- 3. monta a pasta app
 Passo 'Pacote: juntando os arquivos do painel'
-$arquivos = @('server.js','sentiment.js','snapshots.js','preditivo.js','tecnico.js','backup.js',
-              'payroll.js','estado.js','fluxos.js','paths.js','gen-icon.js','index.html',
-              'icon.ico','package.json','LICENSE','README.md')
+# Todo .js da raiz entra: lista fixa ja deixou modulo novo de fora (inflacao.js), e o
+# server.js, que da require nele, nao subia no programa instalado.
+$arquivos = @(Get-ChildItem $raiz -Filter *.js -File | ForEach-Object Name) +
+            @('index.html','icon.ico','package.json','LICENSE','README.md')
 foreach ($f in $arquivos) {
   $de = Join-Path $raiz $f
   if (-not (Test-Path $de)) { Erro "Arquivo do painel faltando: $f" }
   Copy-Item $de (Join-Path $app $f)
 }
-New-Item -ItemType Directory -Path (Join-Path $app 'data') -Force | Out-Null
-Copy-Item (Join-Path $raiz 'data\config.example.json') (Join-Path $app 'data\config.example.json')
+# Sem pasta data\ dentro do programa: o lancador trata "data ao lado do exe" como modo
+# portatil, e os dados iam parar na pasta do programa em vez de %LOCALAPPDATA%\BTC Radar\data,
+# que e o que o LEIA-ME e o atalho do Menu Iniciar prometem. A chave da IA se cola pela tela.
+# (O zip portatil continua guardando ao lado: ele leva a marca portatil.txt.)
 Copy-Item $exeSaida (Join-Path $app 'BTC Radar.exe')
 Copy-Item (Join-Path $win 'BTC Radar (com janela).cmd') $app
 Copy-Item (Join-Path $win 'LEIA-ME.txt') $app
