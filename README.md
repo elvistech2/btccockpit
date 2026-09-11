@@ -10,14 +10,18 @@ corretoras e, se voce quiser os resumos em texto, para o Gemini.
 
 | Aba | O que tem dentro |
 |---|---|
-| **Visao geral** | preco ao vivo, open interest agregado de 4 corretoras, funding, basis, liquidacoes, leitura do mercado em portugues e o detector de **acumulacao x distribuicao** |
-| **Grafico** | preco, open interest, long/short e liquidacoes empilhados no mesmo eixo de tempo |
-| **Liquidez** | profundidade do livro, maiores muros de ordem e mapa de onde o preco realmente estourou posicoes |
-| **Sentimento** | Fear & Greed, analise das noticias de 11 portais e dos documentos do Fed, ultimo payroll do BLS e mercado preditivo (Polymarket, Yahoo, Deribit) |
+| **Visao geral** | preco ao vivo, open interest agregado de 4 corretoras, funding, contagem regressiva do Fed, grafico empilhado (preco, OI, long/short, liquidacoes), livro de ordens, leitura do mercado em portugues, detector de **acumulacao x distribuicao** e os botoes do **Humor do trader** |
+| **Sentimento** | Fear & Greed, noticias de 11 portais e documentos do Fed analisados por IA, payroll e inflacao (CPI/PPI) do BLS, agenda do Fed, **opcoes da Deribit traduzidas pra leigo** e mercado preditivo (Polymarket, Yahoo com S&P 500 e petroleo, Deribit) |
 | **Snapshots** | congela o estado do mercado num instante, com a sua anotacao, pra estudar depois. Nada expira |
 | **Tecnico** | EMA, RSI, MACD, Bollinger, ATR e estrutura em 4 tempos graficos, cada indicador com voto visivel |
 | **Quem compra** | fluxo dos ETFs a vista (bitcoin, ether, solana), tesouraria de empresas de capital aberto, varejo x contas grandes e o **cabo de guerra** da fita por tamanho de ordem |
 | **Alertas** | alertas de preco, funding e liquidacao, com notificacao do navegador |
+
+**Humor do trader** (canto da Visao geral): PANICO (respiracao guiada), RAGE, MONEY, ASSOPRA (o painel "sobe" na
+tela enquanto voce clica — so visual, o preco real nunca muda), SORTE? (cara ou coroa) e os replays **CRASH** e
+**PUMP**, que revivem dias historicos vela a vela. Os sons de MONEY e RAGE estao em `sons/`;
+qualquer botao aceita um som proprio pela engrenagem. Com chave de IA, um **horoscopo cripto** abre uma vez por dia
+(da pra desligar).
 
 ## Rodando no Linux (Mint, Ubuntu, Debian)
 

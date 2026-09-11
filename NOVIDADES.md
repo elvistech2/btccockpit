@@ -1,18 +1,25 @@
-## 1.2.1 — conserto do atualizador
+## Novidades da 1.3.0
 
-A 1.2.0 tinha um defeito: o botão "atualizar agora" fechava o painel mas a instalação não começava. A 1.2.1 corrige isso e, se um dia o instalador não conseguir começar, o painel cancela a atualização e continua no ar.
+**Mais leitura de mercado**
+- **Contagem regressiva do Fed** no topo, e uma agenda com as próximas decisões de juros, CPI e payroll no horário de Brasília.
+- **Inflação** (CPI, núcleo e PPI) na aba Sentimento, pesando na análise do Fed junto com o emprego.
+- **Opções da Deribit traduzidas pra leigo**: um veredito (de medo a bom pra alta), quatro sinais explicados em português e uma régua com piso, preço da dor máxima e teto.
+- **S&P 500 e petróleo** no bloco Macro.
 
-**Quem instalou a 1.2.0:** baixe o `BTC-Radar-Setup-1.2.1` abaixo e instale por cima uma vez. Da 1.2.1 em diante a atualização pelo painel funciona.
+**Humor do trader** (canto da Visão geral)
+- **PÂNICO** (respiração guiada), **RAGE** e **MONEY** com som próprio, **ASSOPRA** (o painel sobe na tela enquanto você clica — só visual, o preço real nunca muda; passou de +44%, a bolha estoura) e **SORTE?** (cara ou coroa).
+- **CRASH** e **PUMP**: reviva, vela a vela, os piores e os melhores dias da história do bitcoin.
+- **Horóscopo cripto**: com chave de IA, abre uma vez por dia com um recado bem-humorado pro seu signo. Tem "nunca mais mostre isso".
 
-## O que veio na 1.2
-
-- **O painel agora se atualiza sozinho.** Quando sai versão nova, aparece um aviso no canto da tela com as novidades e um botão "atualizar agora". Ele baixa o instalador, confere o arquivo contra o SHA-256 que o GitHub publica, instala por cima e o painel volta sozinho em uns 30 segundos. Histórico, snapshots e chave da IA ficam. O número da versão no topo mostra qual você tem — clique nele pra procurar na hora.
-- **Inflação na análise do Fed.** CPI cheio, núcleo, núcleo dos últimos 3 meses anualizado e inflação ao produtor (PPI), direto do BLS, com a data do próximo CPI. Aparece na aba Sentimento, abaixo do payroll, e entra na nota do Fed com o mesmo peso do emprego.
-- **Abas enxutas.** Saíram "Gráfico" e "Liquidez", que só ampliavam painéis da Visão geral — o gráfico e o livro continuam lá. A barra agora é Visão geral, Sentimento, Técnico, Quem compra, Snapshots e Alertas, com os atalhos 1 a 6 na mesma ordem.
-- **Instalador corrigido.** Leva todos os módulos do painel, e instalações novas guardam os dados em `%LOCALAPPDATA%\BTC Radar\data`, como o LEIA-ME sempre disse.
+**Consertos**
+- O **open interest** não mostra mais quedas falsas quando uma corretora deixa de responder por um minuto (tinha virado um alerta de −80%).
+- Payroll e inflação ficam guardados: quando o BLS limitar as consultas do dia, o painel mostra o último dado bom.
+- A barra do topo se ajusta ao tamanho da tela e nunca esconde os links do fim.
+- Abas enxutas: Visão geral, Sentimento, Técnico, Quem compra, Snapshots e Alertas.
 
 ## Como atualizar
 
-- **Quem tem a 1.0.0 ou a 1.2.0:** essas versões não conseguem se atualizar sozinhas. Baixe o `BTC-Radar-Setup` abaixo e instale por cima **uma vez** — seus dados ficam. Daqui pra frente o painel avisa e atualiza sozinho.
-- **Linux (git clone):** o painel faz `git pull` e reinicia sozinho quando você clicar em "atualizar agora".
+- **Quem tem a 1.2.1:** clique em "atualizar agora" no aviso do painel.
+- **Quem tem a 1.0.0 ou a 1.2.0:** baixe o `BTC-Radar-Setup` abaixo e instale por cima uma vez — seus dados ficam. Daí em diante o painel se atualiza sozinho.
+- **Linux (git clone):** "atualizar agora" faz `git pull` e reinicia.
 - **Versão portátil (zip):** baixe o zip novo e troque a pasta, mantendo a sua pasta `data`.
