@@ -269,11 +269,6 @@
   .fonte{display:flex;align-items:center;gap:6px;padding:2px 0;font:10.5px var(--mono)}
   .fonte i{width:6px;height:6px;border-radius:50%;background:var(--buy);flex:none}
   .fonte i.old{background:var(--warn)} .fonte i.dead{background:var(--sell)}
-  body[data-view="structure"] .head{display:none}
-  body[data-view="structure"] #core{grid-template-rows:minmax(0,1fr) auto}
-  body[data-view="pressure"] main{grid-template-columns:236px minmax(0,1fr) 440px}
-  body[data-view="pressure"] #core{grid-template-rows:auto minmax(140px,.55fr) auto}
-  body[data-view="pressure"] .prof{height:390px}
   ::-webkit-scrollbar{width:7px;height:7px}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:4px}
   ::-webkit-scrollbar-track{background:transparent}
@@ -304,12 +299,10 @@
     <div class="stat" id="badge"><span class="lbl">Técnico</span><b class="dim2">—</b></div>
     <div class="views" id="views">
       <button data-v="radar" class="on">Visão geral</button>
-      <button data-v="structure">Gráfico</button>
-      <button data-v="pressure">Liquidez</button>
       <button data-v="sent">Sentimento</button>
-      <button data-v="snap">Snapshots</button>
       <button data-v="tec">Técnico</button>
       <button data-v="fx">Quem compra</button>
+      <button data-v="snap">Snapshots</button>
       <button data-v="alert">Alertas</button>
     </div>
     <div class="live" id="live"><i></i><span>CONECTANDO</span></div>
@@ -1584,8 +1577,8 @@ setInterval(checarAlertas,15000);
 
 /* ================= ATALHOS ================= */
 $('#ajuda').onclick=()=>toast('Atalhos do teclado',
-  '1 visão geral · 2 gráfico · 3 liquidez · 4 sentimento · 5 snapshots · 6 técnico · 7 quem compra · 8 alertas<br>S salva snapshot · R recarrega os dados · clique num nível pra criar alerta');
-const ORDEM=['radar','structure','pressure','sent','snap','tec','fx','alert'];
+  '1 visão geral · 2 sentimento · 3 técnico · 4 quem compra · 5 snapshots · 6 alertas<br>S salva snapshot · R recarrega os dados · clique num nível pra criar alerta');
+const ORDEM=['radar','sent','tec','fx','snap','alert'];
 addEventListener('keydown',e=>{
   if(/input|textarea/i.test((e.target&&e.target.tagName)||'')) return;
   if(e.ctrlKey||e.metaKey||e.altKey) return;
@@ -1805,7 +1798,7 @@ function pintarNiveis(){
 function trocarTF(tf){
   const b=document.querySelector(`#tf [data-tf="${tf}"]`);
   if(b) b.click();
-  mostrarView('structure');
+  mostrarView('radar');
 }
 
 /* ================= FLUXO AGRESSOR AO VIVO (CVD) ================= */
@@ -2352,6 +2345,7 @@ addEventListener('resize',()=>{ if(document.body.dataset.view!=='fx'||!S.fx) ret
 
 /* ---------- views ---------- */
 function mostrarView(v){
+  if(!ORDEM.includes(v)) v='radar';
   document.body.dataset.view=v;
   [...$('#views').children].forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   localStorage.setItem('btcr-view',v);
