@@ -11,6 +11,7 @@ const BACKUP = require('./backup');
 const PAYROLL = require('./payroll');
 const INFLACAO = require('./inflacao');
 const ATUALIZADOR = require('./atualizador');
+const BOTOES = require('./botoes');
 
 // Pedido que muda alguma coisa (grava chave, instala versao) tem que trazer este cabecalho.
 // Pagina de outro site ate consegue mandar POST pro localhost, mas nao com cabecalho
@@ -321,6 +322,15 @@ http.createServer(async (req, res) => {
     const h = Math.min(720, Math.max(1, +(url.match(/horasFita=(\d+)/) || [])[1] || 1));
     try { return json(res, await FLUXOS.tudo(d, ultimo, h)); }
     catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
+  }
+  if (url.startsWith('/api/botoes')) {
+    const nome = (url.match(/^\/api\/botoes\/(\w+)/) || [])[1];
+    if (nome && req.method === 'POST') {
+      if (!pedidoDoPainel(req)) { res.writeHead(403); return res.end('forbidden'); }
+      try { return json(res, BOTOES.apertar(nome)); }
+      catch (e) { return json(res, { error: String(e.message || e) }); }
+    }
+    return json(res, BOTOES.resumo());
   }
   if (url.startsWith('/api/atualizacao/aplicar') && req.method === 'POST') {
     if (!pedidoDoPainel(req)) { res.writeHead(403); return res.end('forbidden'); }

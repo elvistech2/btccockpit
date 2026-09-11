@@ -10,7 +10,7 @@ const DATA = CAMINHOS.DATA;
 const DEST = CAMINHOS.BACKUPS;
 const MANTER = 14;                 // quantas copias guardar
 const ARQUIVOS = ['history.jsonl', 'liquidations.jsonl', 'snapshots.jsonl', 'sentiment.jsonl',
-  'tape.jsonl', 'tesourarias.jsonl', 'premios.jsonl', 'ultima-analise.json', 'config.json'];
+  'tape.jsonl', 'tesourarias.jsonl', 'premios.jsonl', 'ultima-analise.json', 'botoes.json', 'config.json'];
 
 function pastaAgora() {
   const d = new Date();

@@ -171,6 +171,78 @@
     border:1px solid var(--hair);border-radius:3px;padding:8px 12px;margin-bottom:20px}
   .chaveOk .btn{margin-left:auto;padding:3px 10px}
   .chaveForm{border:1px solid var(--warn);border-radius:3px;padding:16px 18px;margin-bottom:22px}
+  /* ---- botões de humor, estilo instant button ---- */
+  .instant{position:fixed;left:16px;bottom:14px;z-index:40;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+  .instantSons{order:0} .instantBotoes{order:1} .instantRodape{order:2}   /* painel de sons abre por cima; contador fica embaixo */
+  body:not([data-view="radar"]) .instant{display:none}
+  .instantBotoes{display:flex;gap:14px;align-items:flex-end;padding:10px 12px 6px;border-radius:14px;
+    background:rgba(8,12,20,.72);backdrop-filter:blur(6px);border:1px solid var(--hair)}
+  .ibtn{position:relative;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;color:var(--txt)}
+  .ibtn i{display:block;width:54px;height:54px;border-radius:50%;position:relative;
+    box-shadow:0 6px 0 var(--sombra),0 9px 14px rgba(0,0,0,.55),inset 0 -6px 10px rgba(0,0,0,.25);transition:transform .07s,box-shadow .07s}
+  .ibtn i::after{content:"";position:absolute;left:22%;top:12%;width:56%;height:30%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,0))}
+  .ibtn:hover i{filter:brightness(1.12)}
+  .ibtn:active i{transform:translateY(5px);box-shadow:0 1px 0 var(--sombra),0 3px 6px rgba(0,0,0,.5),inset 0 -3px 8px rgba(0,0,0,.25)}
+  .ibtn span{font:800 9.5px var(--ui);letter-spacing:1.3px;text-shadow:0 1px 2px #000}
+  .ibtn em{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;
+    background:#0b1220;border:1px solid var(--hair2);font:700 10px/18px var(--mono);font-style:normal;color:var(--txt)}
+  .ibtn.panico{--sombra:#1b5b8a} .ibtn.panico i{background:radial-gradient(circle at 50% 35%,#8fdcff,#2b8fd6 60%,#1f6aa3)}
+  .ibtn.rage{--sombra:#8a1111} .ibtn.rage i{background:radial-gradient(circle at 50% 35%,#ff8c8c,#e11d2a 60%,#a50f1a)}
+  .ibtn.money{--sombra:#16691f} .ibtn.money i{background:radial-gradient(circle at 50% 35%,#a6ff9e,#2fbf4a 60%,#1c8a31)}
+  .instantRodape{display:flex;gap:10px;align-items:center;font:10px var(--mono);color:var(--dim);background:rgba(8,12,20,.72);padding:3px 10px;border-radius:8px}
+  .instantRodape .cPan{color:#5cc0ff} .instantRodape .cRag{color:#ff5a66} .instantRodape .cMon{color:#4ade80}
+  #instantCfg,#instantMin{cursor:pointer;opacity:.6} #instantCfg:hover,#instantMin:hover{opacity:1}
+  .instant.recolhido .instantBotoes,.instant.recolhido .instantSons{display:none}
+  .instant.recolhido #instantMin{transform:rotate(180deg)}
+  .instantSons{width:min(560px,calc(100vw - 32px));background:#0b1220;border:1px solid var(--hair2);border-radius:6px;padding:12px 14px}
+  .somLinha{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;font:10.5px var(--mono)}
+  .somLinha b{width:86px} .somLinha .f{flex:1;min-width:180px} .somLinha .btn{padding:4px 8px}
+
+  /* ---- efeitos de tela ---- */
+  .fxOverlay{position:fixed;inset:0;z-index:75;display:flex;align-items:center;justify-content:center;animation:fxEntra .35s ease}
+  .fxOverlay[hidden]{display:none}
+  .fxOverlay.saindo{animation:fxSai .45s ease forwards}
+  @keyframes fxEntra{from{opacity:0}to{opacity:1}} @keyframes fxSai{to{opacity:0}}
+  .fx-panico{background:radial-gradient(circle at 50% 45%,rgba(40,110,170,.55),rgba(4,10,24,.93) 70%)}
+  .calmo{text-align:center;color:#dff3ff;max-width:560px;padding:20px}
+  .calmoTit{font:700 12px var(--ui);letter-spacing:4px;color:#8fdcff}
+  .bolha{position:relative;width:250px;height:250px;margin:26px auto;display:flex;align-items:center;justify-content:center;flex-direction:column}
+  .bolhaIn{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(143,220,255,.55),rgba(43,143,214,.12) 70%);
+    box-shadow:0 0 60px rgba(143,220,255,.35);transform:scale(.45)}
+  .bolha span{position:relative;font:600 22px var(--ui);letter-spacing:2px}
+  .bolha b{position:relative;font:300 40px var(--mono);margin-top:4px}
+  .calmoFrase{font:15px/1.6 var(--ui);min-height:50px;transition:opacity .4s}
+  .calmoPe{font:10.5px var(--mono);color:rgba(223,243,255,.55);margin-top:22px;line-height:1.7}
+  body.fx-rage #app{animation:treme .12s linear infinite}
+  @keyframes treme{0%{transform:translate(0,0)}25%{transform:translate(-5px,3px)}50%{transform:translate(4px,-4px)}75%{transform:translate(-3px,-2px)}100%{transform:translate(3px,4px)}}
+  .fx-rage{background:radial-gradient(circle,rgba(255,20,40,.35),rgba(110,0,10,.88));animation:fxEntra .2s, pisca .5s steps(2) infinite}
+  @keyframes pisca{50%{background:radial-gradient(circle,rgba(255,60,60,.5),rgba(150,0,12,.92))}}
+  .rageTexto{position:absolute;top:10%;left:0;right:0;text-align:center;font:900 clamp(28px,6vw,64px) var(--ui);color:#fff;
+    text-shadow:0 0 18px #ff0015,4px 4px 0 #6b0008;letter-spacing:1px;padding:0 20px}
+  .rageQueda{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .rageSvg{position:absolute;left:50%;width:200px;margin-left:-100px;animation:cai 2.9s cubic-bezier(.45,0,1,1) infinite}
+  @keyframes cai{0%{top:-560px;transform:rotate(-4deg)}50%{transform:rotate(5deg)}100%{top:110%;transform:rotate(-6deg)}}
+  .perna{transform-box:fill-box;transform-origin:50% 0}
+  .perna.p1{animation:chuta .22s ease-in-out infinite alternate} .perna.p2{animation:chuta .22s ease-in-out infinite alternate-reverse}
+  @keyframes chuta{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+  .gota{animation:gota .5s linear infinite} .gota.g2{animation-delay:.25s}
+  @keyframes gota{from{transform:translateY(0);opacity:1}to{transform:translateY(-26px);opacity:0}}
+  .velocidade{animation:vento .25s linear infinite}
+  @keyframes vento{from{transform:translateY(40px)}to{transform:translateY(-40px)}}
+  .balao{animation:grita .18s steps(2) infinite}
+  @keyframes grita{50%{transform:translate(2px,-2px)}}
+  .ragePe{position:absolute;bottom:6%;left:0;right:0;text-align:center;font:11px var(--mono);color:rgba(255,255,255,.7)}
+  .fx-money{background:radial-gradient(circle,rgba(40,255,120,.2),rgba(0,60,20,.62))}
+  body.fx-money #app{filter:hue-rotate(-10deg) saturate(1.3) brightness(1.08)}
+  .fx-money canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .moneyTexto{position:relative;text-align:center;animation:pulsa .6s ease-in-out infinite alternate}
+  .moneyTexto b{display:block;font:900 clamp(40px,9vw,110px) var(--ui);letter-spacing:2px;
+    background:linear-gradient(180deg,#fff7b0,#ffd23f 45%,#e0a400);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 0 #0f5a22) drop-shadow(0 0 22px rgba(255,215,0,.55))}
+  .moneyTexto span{font:600 16px var(--ui);color:#eafff0;text-shadow:0 2px 6px #000}
+  @keyframes pulsa{from{transform:scale(1)}to{transform:scale(1.06)}}
+  @media (prefers-reduced-motion:reduce){ body.fx-rage #app{animation:none} .rageSvg{animation-duration:6s} }
+
   .updAviso{position:fixed;top:54px;right:18px;z-index:60;width:min(430px,calc(100vw - 36px));
     background:#0b1220;border:1px solid var(--data);border-radius:4px;padding:14px 16px;
     box-shadow:0 10px 40px rgba(0,0,0,.55);font:11.5px var(--mono)}
@@ -302,6 +374,16 @@
 </head>
 <body data-view="radar">
 <div id="updAviso" class="updAviso" hidden></div>
+<div id="instant" class="instant">
+  <div class="instantBotoes">
+    <button class="ibtn panico" data-b="panico" title="respira, vai passar"><i></i><span>PÂNICO</span><em id="cnt-panico">0</em></button>
+    <button class="ibtn rage" data-b="rage" title="deixa sair"><i></i><span>RAGE</span><em id="cnt-rage">0</em></button>
+    <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span>MONEY BABY</span><em id="cnt-money">0</em></button>
+  </div>
+  <div class="instantRodape"><span id="instantPe">…</span><span id="instantCfg" title="trocar os sons">⚙</span><span id="instantMin" title="recolher / mostrar os botões">▾</span></div>
+  <div id="instantSons" class="instantSons" hidden></div>
+</div>
+<div id="fxOverlay" class="fxOverlay" hidden></div>
 <div id="updTela" class="updTela" hidden></div>
 <div id="app">
 
@@ -2473,6 +2555,313 @@ function desenharFluxoEtf(){
 addEventListener('resize',()=>{ if(document.body.dataset.view!=='fx'||!S.fx) return;
   if(S.fxModo==='clean') ATIVOS.forEach(desenharSpark); else desenharFluxoEtf(); });
 
+/* ================= BOTÕES DE HUMOR (pânico · rage · money baby) ================= */
+// Tudo original e gerado aqui: o som sai do Web Audio, a animação é SVG/canvas.
+// Música famosa e clipe de terceiro não vão no repositório público; quem quiser
+// o próprio som cola um link ou escolhe um arquivo no ⚙ — fica só neste navegador.
+const HUMOR={
+  panico:{nome:'PÂNICO',dur:56000},
+  rage:{nome:'RAGE',dur:6200},
+  money:{nome:'MONEY BABY',dur:10000}
+};
+S.botoes=null;
+let AC=null, fxAtual=null;
+const ctxAudio=()=>{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); return AC; };
+const ruidoBuf=(()=>{ let b=null; return c=>{ if(b) return b; b=c.createBuffer(1,c.sampleRate*2,c.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; return b; }; })();
+
+// uma nota com envelope simples; devolve o oscilador pra quem quiser mexer na frequência
+function tom(c,dest,{f,t,d,tipo='sine',v=.2,a=.01,r=.15,para=null}){
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=tipo; o.frequency.setValueAtTime(f,t);
+  if(para) o.frequency.exponentialRampToValueAtTime(para,t+d);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+a);
+  g.gain.setValueAtTime(v,t+Math.max(a,d-r)); g.gain.linearRampToValueAtTime(0,t+d);
+  o.connect(g).connect(dest); o.start(t); o.stop(t+d+.05);
+  return o;
+}
+function chiado(c,dest,{t,d,v=.2,tipo='highpass',f=6000,q=.7}){
+  const s=c.createBufferSource(); s.buffer=ruidoBuf(c);
+  const fl=c.createBiquadFilter(); fl.type=tipo; fl.frequency.value=f; fl.Q.value=q;
+  const g=c.createGain(); g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+  s.connect(fl).connect(g).connect(dest); s.start(t, Math.random()); s.stop(t+d+.02);
+}
+
+/* ---- sons ---- */
+// grito de desenho animado: dente de serra passando por dois filtros com a cara do "AAAA"
+function somGrito(c,dest,t){
+  const o=c.createOscillator(); o.type='sawtooth';
+  o.frequency.setValueAtTime(420,t); o.frequency.linearRampToValueAtTime(930,t+.18);
+  o.frequency.setValueAtTime(930,t+.7); o.frequency.exponentialRampToValueAtTime(230,t+1.75);
+  const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=9; lg.gain.value=38; lfo.connect(lg).connect(o.frequency);
+  const g=c.createGain();
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.45,t+.06); g.gain.setValueAtTime(.45,t+1.35); g.gain.linearRampToValueAtTime(0,t+1.8);
+  for(const [f,q,vol] of [[780,6,1],[1180,7,.7],[2500,9,.25]]){
+    const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f; bp.Q.value=q;
+    const gv=c.createGain(); gv.gain.value=vol; o.connect(bp).connect(gv).connect(g);
+  }
+  g.connect(dest); o.start(t); lfo.start(t); o.stop(t+1.85); lfo.stop(t+1.85);
+  chiado(c,dest,{t,d:1.6,v:.07,tipo:'bandpass',f:1600,q:1});
+}
+// "uóm uóm uóm uóóóm" — o trombone triste
+function somTrombone(c,dest,t){
+  [[392,.42],[370,.42],[349,.42],[330,1.3]].forEach(([f,d],i)=>{
+    const ti=t+i*.46;
+    const o=tom(c,c.destination,{f,t:ti,d,tipo:'sawtooth',v:0});   // só pra ter o oscilador
+    o.disconnect();
+    const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=6;
+    lp.frequency.setValueAtTime(350,ti); lp.frequency.linearRampToValueAtTime(1500,ti+.12); lp.frequency.linearRampToValueAtTime(500,ti+d);
+    const g=c.createGain(); g.gain.setValueAtTime(0,ti); g.gain.linearRampToValueAtTime(.3,ti+.05); g.gain.setValueAtTime(.3,ti+d-.1); g.gain.linearRampToValueAtTime(0,ti+d);
+    if(i===3){ const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=6; lg.gain.value=9; lfo.connect(lg).connect(o.frequency); lfo.start(ti+.3); lfo.stop(ti+d); }
+    o.connect(lp).connect(g).connect(dest);
+  });
+}
+// caixa registradora: dois "tins" metálicos e o chacoalhar das moedas
+function somCaixa(c,dest,t){
+  tom(c,dest,{f:2637,t,d:.5,tipo:'triangle',v:.16,r:.45});
+  tom(c,dest,{f:3951,t:t+.09,d:.6,tipo:'triangle',v:.13,r:.55});
+  tom(c,dest,{f:5274,t:t+.09,d:.3,tipo:'sine',v:.05,r:.28});
+  chiado(c,dest,{t:t+.02,d:.35,v:.12,tipo:'bandpass',f:5200,q:2});
+}
+function somMoeda(c,dest,t){ tom(c,dest,{f:1975,t,d:.08,tipo:'square',v:.05}); tom(c,dest,{f:2637,t:t+.07,d:.25,tipo:'square',v:.05,r:.2}); }
+
+// música calma do pânico: acordes longos e sininhos soltos na escala pentatônica
+function musicaCalma(c,dest){
+  const ac=[[130.8,164.8,196,246.9],[110,130.8,164.8,196],[87.3,110,130.8,164.8],[98,123.5,146.8,164.8]];
+  const penta=[523.3,587.3,659.3,784,880,1046.5];
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1100; lp.connect(dest);
+  let i=0, prox=c.currentTime+.05;
+  const passo=()=>{
+    while(prox<c.currentTime+1.2){
+      const acorde=ac[i++%ac.length];
+      acorde.forEach(f=>{ for(const det of [-4,4]){ const o=tom(c,lp,{f,t:prox,d:4.6,tipo:'triangle',v:.035,a:1.6,r:1.8}); o.detune.value=det; } });
+      for(let k=0;k<3;k++) if(Math.random()<.75) tom(c,dest,{f:penta[Math.floor(Math.random()*penta.length)],t:prox+.4+k*1.2+Math.random()*.4,d:1.8,tipo:'sine',v:.035,a:.01,r:1.6});
+      prox+=4;
+    }
+  };
+  passo(); return setInterval(passo,500);
+}
+// batida do money baby: 100 bpm, bumbo, palma, chimbal, baixo e acorde nos contratempos
+function musicaMoney(c,dest){
+  const bpm=100, b=60/bpm, s=b/2;
+  const baixo=[55,55,65.4,73.4,82.4,82.4,73.4,65.4];
+  const acordes=[[220,261.6,329.6,392],[293.7,349.2,440,523.3]];
+  let compasso=0, prox=c.currentTime+.05;
+  const passo=()=>{
+    while(prox<c.currentTime+.8){
+      const t0=prox;
+      for(let k=0;k<8;k++){
+        const t=t0+k*s;
+        if(k===0||k===3||k===4) tom(c,dest,{f:150,para:42,t,d:.28,tipo:'sine',v:.5,r:.2});
+        if(k===2||k===6){ chiado(c,dest,{t,d:.16,v:.28,tipo:'bandpass',f:1700,q:.8}); chiado(c,dest,{t:t+.012,d:.12,v:.18,tipo:'bandpass',f:2400,q:1}); }
+        chiado(c,dest,{t,d:k%2?.03:.05,v:k%2?.05:.08,tipo:'highpass',f:8000});
+        tom(c,dest,{f:baixo[k],t,d:s*.9,tipo:'square',v:.07,r:.05});
+        if(k%2===1) acordes[compasso%2].forEach(f=>tom(c,dest,{f,t,d:s*.8,tipo:'triangle',v:.028,r:.08}));
+      }
+      if(compasso%2===0) somCaixa(c,dest,t0);
+      compasso++; prox+=8*s;
+    }
+  };
+  passo(); return setInterval(passo,300);
+}
+
+/* ---- som próprio da pessoa (⚙): link ou arquivo, guardado só aqui ---- */
+const somProprio=nome=>{ try{ return JSON.parse(localStorage.getItem('btcr-som-'+nome)||'null'); }catch(e){ return null; } };
+function tocarProprio(nome,loop){
+  const cfg=somProprio(nome); if(!cfg||!cfg.valor) return null;
+  const a=new Audio(cfg.valor); a.loop=!!loop; a.volume=.85;
+  a.play().catch(()=>toast('Seu som não tocou','O link ou arquivo do botão '+HUMOR[nome].nome+' falhou — voltei pro som padrão.','erro'));
+  return a;
+}
+
+/* ---- efeito na tela ---- */
+function pararHumor(){
+  const f=fxAtual; fxAtual=null; if(!f) return;
+  clearInterval(f.musica); clearTimeout(f.fim); cancelAnimationFrame(f.raf); (f.timers||[]).forEach(clearInterval);
+  if(f.mestre){ try{ const c=ctxAudio(); f.mestre.gain.cancelScheduledValues(c.currentTime); f.mestre.gain.setTargetAtTime(0,c.currentTime,.25); setTimeout(()=>f.mestre.disconnect(),1200); }catch(e){} }
+  if(f.audio){ f.audio.pause(); f.audio.src=''; }
+  document.body.classList.remove('fx-rage','fx-money','fx-panico');
+  const ov=$('#fxOverlay'); ov.classList.add('saindo');
+  setTimeout(()=>{ ov.hidden=true; ov.className='fxOverlay'; ov.innerHTML=''; },450);
+}
+function novoEfeito(tipo){
+  pararHumor();
+  const c=ctxAudio(), mestre=c.createGain(); mestre.gain.value=.9; mestre.connect(c.destination);
+  fxAtual={tipo,mestre,timers:[]};
+  const ov=$('#fxOverlay'); ov.hidden=false; ov.className='fxOverlay fx-'+tipo;
+  ov.onclick=e=>{ if(e.target.closest('.fxFicar')) return; pararHumor(); };
+  document.body.classList.add('fx-'+tipo);
+  fxAtual.fim=setTimeout(pararHumor,HUMOR[tipo].dur);
+  return {c,mestre,ov};
+}
+const sorteia=a=>a[Math.floor(Math.random()*a.length)];
+
+function efeitoPanico(){
+  const {c,mestre,ov}=novoEfeito('panico');
+  const frases=[
+    'O mercado não sabe que você existe. Isso é libertador.',
+    'Respira. O bitcoin já caiu mais de 80% quatro vezes e continua aqui. Você também.',
+    'Vender no pânico é comprar arrependimento com desconto.',
+    'Feche o app. Beba água. O candle vermelho não te segue até a cozinha.',
+    'Ninguém nunca ficou rico olhando o gráfico de 1 minuto.',
+    'Sua alavancagem não sente a sua dor. Seu coração sente.',
+    'HODL é só respirar com outro nome.',
+    'Se fosse fácil, seu primo do grupo da família já estaria rico.'
+  ];
+  const fases=[['inspira',4],['segura',4],['solta',6]];
+  ov.innerHTML=`<div class="calmo">
+    <div class="calmoTit">MODO PÂNICO ATIVADO</div>
+    <div class="bolha"><div class="bolhaIn" id="bolha"></div><span id="bolhaTxt">inspira</span><b id="bolhaN">4</b></div>
+    <div class="calmoFrase" id="calmoFrase">${sorteia(frases)}</div>
+    <div class="calmoPe">4 segundos inspirando · 4 segurando · 6 soltando<br>clique em qualquer lugar pra voltar pro caos</div>
+  </div>`;
+  const a=tocarProprio('panico',true);
+  if(a) fxAtual.audio=a; else fxAtual.musica=musicaCalma(c,mestre);
+  let fase=0, resta=fases[0][1], ciclo=0;
+  const pinta=()=>{
+    const [nome,seg]=fases[fase];
+    $('#bolhaTxt').textContent=nome; $('#bolhaN').textContent=resta;
+    const bol=$('#bolha');
+    bol.style.transition=`transform ${seg}s ease-in-out`;
+    bol.style.transform=nome==='solta'?'scale(.45)':'scale(1)';
+  };
+  pinta();
+  fxAtual.timers.push(setInterval(()=>{
+    if(!fxAtual) return;
+    resta--;
+    if(resta<=0){
+      fase=(fase+1)%fases.length; resta=fases[fase][1];
+      if(fase===0){ ciclo++; const fr=$('#calmoFrase'); fr.style.opacity=0; setTimeout(()=>{ fr.textContent=sorteia(frases); fr.style.opacity=1; },400); }
+      pinta();
+    }else $('#bolhaN').textContent=resta;
+  },1000));
+}
+
+function efeitoRage(){
+  const {c,mestre,ov}=novoEfeito('rage');
+  const gritos=['LIQUIDADO','COMPREI NO TOPO','QUEM MANDOU 100x?','"É SÓ UM PULLBACK", ELES DISSERAM','-99%','ERA PRA SER SWING TRADE','ME DEVOLVE'];
+  // o meme desenhado aqui: um coitado agarrado num candle vermelho em queda livre
+  ov.innerHTML=`<div class="rageTexto">${sorteia(gritos)}</div>
+    <div class="rageQueda">
+      <svg viewBox="0 0 220 520" class="rageSvg" aria-hidden="true">
+        <g class="velocidade" stroke="rgba(255,255,255,.35)" stroke-width="3" stroke-linecap="round">
+          <line x1="40" y1="0" x2="40" y2="60"/><line x1="180" y1="10" x2="180" y2="90"/>
+          <line x1="70" y1="-20" x2="70" y2="30"/><line x1="150" y1="-40" x2="150" y2="20"/>
+        </g>
+        <line x1="110" y1="40" x2="110" y2="500" stroke="#ff5a66" stroke-width="6"/>
+        <rect x="72" y="90" width="76" height="330" rx="6" fill="#ff2d3d" stroke="#ffb3b9" stroke-width="3"/>
+        <rect x="80" y="100" width="12" height="310" rx="4" fill="rgba(255,255,255,.18)"/>
+        <g class="coitado">
+          <circle cx="110" cy="205" r="30" fill="#ffe0c2" stroke="#222" stroke-width="3"/>
+          <circle cx="99" cy="199" r="7" fill="#fff" stroke="#222" stroke-width="2"/><circle cx="99" cy="201" r="2.6" fill="#222"/>
+          <circle cx="121" cy="199" r="7" fill="#fff" stroke="#222" stroke-width="2"/><circle cx="121" cy="201" r="2.6" fill="#222"/>
+          <ellipse cx="110" cy="221" rx="8" ry="11" fill="#5a1010" stroke="#222" stroke-width="2"/>
+          <path d="M92 188 l12 5 M128 188 l-12 5" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+          <path class="gota" d="M142 186 q5 9 0 13 q-5 -4 0 -13z" fill="#7fd3ff"/>
+          <path class="gota g2" d="M78 192 q5 9 0 13 q-5 -4 0 -13z" fill="#7fd3ff"/>
+          <path d="M110 235 L110 300" stroke="#1d4ed8" stroke-width="16" stroke-linecap="round"/>
+          <path d="M104 245 Q60 250 70 285 M116 245 Q160 250 150 285" stroke="#ffe0c2" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <g class="perna p1"><path d="M104 298 L86 350" stroke="#333" stroke-width="10" stroke-linecap="round"/></g>
+          <g class="perna p2"><path d="M116 298 L134 350" stroke="#333" stroke-width="10" stroke-linecap="round"/></g>
+        </g>
+        <g class="balao"><rect x="140" y="130" width="78" height="34" rx="10" fill="#fff"/><text x="179" y="153" text-anchor="middle" font-size="16" font-weight="800" fill="#c00">AAAAH</text></g>
+      </svg>
+    </div>
+    <div class="ragePe">clique pra se recompor</div>`;
+  const a=tocarProprio('rage',false);
+  if(a) fxAtual.audio=a;
+  else { const t=c.currentTime+.03; somGrito(c,mestre,t); somTrombone(c,mestre,t+1.9); }
+  fxAtual.timers.push(setInterval(()=>{ const el=ov.querySelector('.rageTexto'); if(el) el.textContent=sorteia(gritos); },1500));
+}
+
+function efeitoMoney(){
+  const {c,mestre,ov}=novoEfeito('money');
+  const frases=['o mercado lembrou que você existe','compra um cafezinho, você merece','não conta pro leão','printa antes que vire meme de rage','realiza um pouquinho, vai','hoje o gráfico te ama'];
+  ov.innerHTML=`<canvas id="chuva"></canvas>
+    <div class="moneyTexto"><b>MONEY BABY</b><span>${sorteia(frases)}</span></div>`;
+  const a=tocarProprio('money',true);
+  if(a) fxAtual.audio=a; else fxAtual.musica=musicaMoney(c,mestre);
+  // chuva de dinheiro: notas desenhadas, girando e balançando enquanto caem
+  const cv=$('#chuva'), g=cv.getContext('2d');
+  const tam=()=>{ cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio; g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); };
+  tam();
+  const notas=[]; const W=()=>innerWidth, H=()=>innerHeight;
+  const nova=(topo)=>({ x:Math.random()*W(), y:topo?-40-Math.random()*H():Math.random()*-H(), v:1.6+Math.random()*2.6,
+    r:Math.random()*6.28, vr:(Math.random()-.5)*.08, osc:Math.random()*6.28, w:46+Math.random()*16, emoji:Math.random()<.14 });
+  for(let i=0;i<110;i++) notas.push(nova(true));
+  let ultimaMoeda=0;
+  const quadro=ts=>{
+    if(!fxAtual||fxAtual.tipo!=='money') return;
+    g.clearRect(0,0,W(),H());
+    for(const n of notas){
+      n.y+=n.v; n.osc+=.04; n.r+=n.vr; const x=n.x+Math.sin(n.osc)*18;
+      if(n.y>H()+50) Object.assign(n,nova(false),{y:-50});
+      g.save(); g.translate(x,n.y); g.rotate(n.r);
+      if(n.emoji){ g.font='30px serif'; g.fillText(Math.random()<.5?'💸':'💰',-15,10); }
+      else{
+        const w=n.w, h=w*.46;
+        g.fillStyle='#2f8f46'; g.fillRect(-w/2,-h/2,w,h);
+        g.strokeStyle='#bff5c9'; g.lineWidth=1.5; g.strokeRect(-w/2+3,-h/2+3,w-6,h-6);
+        g.fillStyle='#d8ffe0'; g.beginPath(); g.arc(0,0,h*.32,0,6.28); g.fill();
+        g.fillStyle='#1c5e2c'; g.font=`bold ${Math.round(h*.5)}px sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('$',0,1);
+      }
+      g.restore();
+    }
+    if(!fxAtual.audio && ts-ultimaMoeda>700){ ultimaMoeda=ts; somMoeda(c,mestre,c.currentTime+.01); }
+    fxAtual.raf=requestAnimationFrame(quadro);
+  };
+  fxAtual.raf=requestAnimationFrame(quadro);
+}
+
+/* ---- contador ---- */
+async function carregarBotoes(){ const j=await api('/api/botoes'); if(j&&!j.error){ S.botoes=j; pintarContador(); } }
+function pintarContador(){
+  const b=S.botoes; if(!b) return;
+  for(const n of Object.keys(HUMOR)){ const el=$('#cnt-'+n); if(el) el.textContent=b[n]?b[n].total:0; }
+  const hoje=Object.keys(HUMOR).map(n=>(b[n]&&b[n].hoje)||0), tot=Object.keys(HUMOR).reduce((s,n)=>s+((b[n]&&b[n].total)||0),0);
+  const humor=hoje[2]>hoje[1]+hoje[0]?'o dia está verde':hoje[1]>hoje[2]?'dia difícil, hein':hoje[0]>0?'respira':'';
+  $('#instantPe').innerHTML=`hoje <b class="cPan">${hoje[0]}</b> · <b class="cRag">${hoje[1]}</b> · <b class="cMon">${hoje[2]}</b> · total ${tot}${humor?` · <span class="dim2">${humor}</span>`:''}`;
+}
+async function apertarHumor(nome){
+  ({panico:efeitoPanico,rage:efeitoRage,money:efeitoMoney})[nome]();
+  try{
+    const r=await fetch('/api/botoes/'+nome,{method:'POST',headers:{'x-btc-radar':'1'}});
+    const j=await r.json(); if(!j.error){ S.botoes=j; pintarContador(); }
+  }catch(e){}
+}
+document.querySelectorAll('#instant .ibtn').forEach(b=>b.onclick=()=>apertarHumor(b.dataset.b));
+// recolher: some com os botões e deixa só o rodapé com o contador
+function recolherHumor(sim){ $('#instant').classList.toggle('recolhido',sim); document.body.classList.toggle('instMin',sim); try{ localStorage.setItem('btcr-instant-min',sim?'1':''); }catch(e){} }
+$('#instantMin').onclick=()=>recolherHumor(!$('#instant').classList.contains('recolhido'));
+try{ if(localStorage.getItem('btcr-instant-min')) recolherHumor(true); }catch(e){}
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&fxAtual) pararHumor(); });
+
+/* ---- ⚙ trocar som ---- */
+$('#instantCfg').onclick=()=>{
+  const el=$('#instantSons'); el.hidden=!el.hidden; if(el.hidden) return;
+  el.innerHTML=`<div class="h2" style="font-size:10px">Seus sons<small>link direto de áudio (ex.: um .mp3 do Instant Buttons) ou arquivo do seu PC · fica só neste navegador</small></div>`+
+    Object.entries(HUMOR).map(([n,h])=>{ const s=somProprio(n);
+      return `<div class="somLinha"><b>${h.nome}</b>
+        <input class="f" id="som-url-${n}" placeholder="https://…/som.mp3" value="${s&&s.tipo==='url'?escHtml(s.valor):''}">
+        <label class="btn" style="cursor:pointer">arquivo<input type="file" accept="audio/*" data-n="${n}" hidden></label>
+        <button class="btn" data-salvar="${n}">salvar</button>
+        <button class="btn" data-limpar="${n}" title="voltar pro som padrão">padrão</button>
+        <span class="dim2">${s?(s.tipo==='arquivo'?'arquivo: '+escHtml(s.nome):'link próprio'):'som padrão'}</span></div>`; }).join('');
+  el.querySelectorAll('[data-salvar]').forEach(b=>b.onclick=()=>{
+    const n=b.dataset.salvar, v=$('#som-url-'+n).value.trim();
+    if(!/^https?:\/\/\S+$/i.test(v)){ toast('Link inválido','Cole um endereço que comece com http e aponte direto pro áudio.','erro'); return; }
+    localStorage.setItem('btcr-som-'+n,JSON.stringify({tipo:'url',valor:v})); toast('Som trocado',HUMOR[n].nome+' agora toca o seu link.'); $('#instantCfg').click(); $('#instantCfg').click();
+  });
+  el.querySelectorAll('[data-limpar]').forEach(b=>b.onclick=()=>{ localStorage.removeItem('btcr-som-'+b.dataset.limpar); $('#instantCfg').click(); $('#instantCfg').click(); });
+  el.querySelectorAll('input[type=file]').forEach(inp=>inp.onchange=()=>{
+    const f=inp.files[0], n=inp.dataset.n; if(!f) return;
+    if(f.size>2.5e6){ toast('Arquivo grande demais','Até 2,5 MB — o navegador guarda o som dentro dele. Corte o trecho que interessa.','erro'); return; }
+    const r=new FileReader();
+    r.onload=()=>{ try{ localStorage.setItem('btcr-som-'+n,JSON.stringify({tipo:'arquivo',nome:f.name,valor:r.result})); toast('Som trocado',HUMOR[n].nome+' agora toca '+escHtml(f.name)+'.'); $('#instantCfg').click(); $('#instantCfg').click(); }
+      catch(e){ toast('Não coube','O navegador não tem espaço pra guardar esse arquivo. Tente um trecho menor ou use um link.','erro'); } };
+    r.readAsDataURL(f);
+  });
+};
+
 /* ---------- views ---------- */
 function mostrarView(v){
   if(!ORDEM.includes(v)) v='radar';
@@ -2496,7 +2885,7 @@ montarLegenda();
 conectar();
 carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia(); carregarMercados();
 carregarFng(); carregarHistSent(); carregarSnaps(); carregarBackup(); frescor(); carregarChave();
-carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); setTimeout(checarAtualizacao,1500);
+carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); carregarBotoes(); setTimeout(checarAtualizacao,1500);
 setInterval(checarAtualizacao,3.6e6); carregarEstado();
 setInterval(carregarEstado,300000);
 setInterval(carregarPayroll,6*3.6e6); setInterval(carregarInflacao,6*3.6e6);
