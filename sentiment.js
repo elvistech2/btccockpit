@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const PAYROLL = require('./payroll');
+const INFLACAO = require('./inflacao');
 const CAMINHOS = require('./paths');
 
 const DATA = CAMINHOS.DATA;
@@ -352,18 +353,21 @@ async function fedDocs(n = 4) {
 }
 
 async function analisarFed(n = 4) {
-  // payroll entra junto com os documentos: entre uma reuniao e outra e ele que move
-  // a expectativa de corte ou de alta, e o Fed le emprego antes de qualquer outra coisa
-  const [docs, pay] = await Promise.all([
+  // payroll e inflacao entram junto com os documentos: sao os dois lados do mandato do
+  // Fed, e entre uma reuniao e outra sao eles que movem a aposta de corte ou de alta
+  const [docs, pay, inf] = await Promise.all([
     fedDocs(n),
-    PAYROLL.ler().catch(e => ({ erro: String(e.message || e).slice(0, 80) }))
+    PAYROLL.ler().catch(e => ({ erro: String(e.message || e).slice(0, 80) })),
+    INFLACAO.ler().catch(e => ({ erro: String(e.message || e).slice(0, 80) }))
   ]);
   const payOk = pay && !pay.erro ? pay : null;
+  const infOk = inf && !inf.erro ? inf : null;
   const bons = docs.filter(d => d.ok);
-  if (!bons.length && !payOk) throw new Error('baixei as paginas do Fed mas nao consegui extrair o texto dos documentos');
+  if (!bons.length && !payOk && !infOk) throw new Error('baixei as paginas do Fed mas nao consegui extrair o texto dos documentos');
   const material = bons.map(d =>
     `[${d.tipo.toUpperCase()}] ${d.title}\nDATA: ${d.date}\nTEXTO: ${d.text}`).join('\n\n---\n\n');
   const blocoPayroll = payOk ? PAYROLL.paraPrompt(payOk) : '(dado de emprego indisponivel agora)';
+  const blocoInflacao = infOk ? INFLACAO.paraPrompt(infOk) : '(dado de inflacao indisponivel agora)';
   const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const prompt = `${REGRAS}
 
@@ -381,14 +385,22 @@ Regras da resposta:
   costuma forcar corte de juro, o que FAVORECE cripto; emprego forte com salario subindo rapido tira a pressa do Fed e DESFAVORECE.
   Compare o que os documentos dizem sobre o mercado de trabalho com o que o numero mostra: se o Fed falou em emprego
   resiliente e o payroll veio fraco (ou o contrario), diga isso, porque e ai que muda a aposta de juro.
+- Leve a INFLACAO em conta com o mesmo peso: nucleo acima de 3% ou acelerando segura o Fed longe do corte e
+  DESFAVORECE cripto; inflacao cedendo em direcao a meta de 2% abre espaco pra corte e FAVORECE.
+  Olhe mais o nucleo e a direcao do que o numero cheio de um mes so. Se emprego e inflacao apontam pra lados
+  opostos (ex: emprego fraco pedindo corte, inflacao alta segurando), diga que o Fed esta num dilema e qual lado os
+  documentos indicam que ele vai priorizar.
 - "score": -100 (Fed muito duro, pessimo pra cripto) a 100 (Fed muito frouxo, otimo pra cripto). Use 0 so se realmente houver equilibrio.
 - "pontos": exatamente os temas que mexem com cripto — rumo do juro, inflacao, liquidez/balanco do Fed, e o que isso faz com ativo de risco.
 - "destaques": cite o documento e a frase concreta que embasa cada leitura (ex: "Na ata de 29/07 o Fed disse que ...").
 - Nao invente: se algum documento nao tratar de politica monetaria, ignore ele em silencio e use os outros.
-- Em "pontos", um dos itens tem que ser o mercado de trabalho e o que ele faz com a chance de corte de juro.
+- Em "pontos", um dos itens tem que ser o mercado de trabalho e outro a inflacao, cada um dizendo o que faz com a chance de corte de juro.
 
 === EMPREGO NOS EUA ===
 ${blocoPayroll}
+
+=== INFLACAO NOS EUA ===
+${blocoInflacao}
 
 === DOCUMENTOS DO FED ===
 ${material || '(nenhum documento com texto extraivel agora - use o emprego)'}`;
@@ -399,7 +411,12 @@ ${material || '(nenhum documento com texto extraivel agora - use o emprego)'}`;
     title: `[payroll] Employment Situation - ${payOk.mes}: ${payOk.vagas >= 0 ? '+' : ''}${payOk.vagas} mil vagas, desemprego ${payOk.desemprego}%`,
     url: 'https://www.bls.gov/news.release/empsit.nr0.htm', date: payOk.mes
   });
-  out.cobertura = { documentos: bons.length, tentados: docs.length, payroll: !!payOk };
+  out.inflacao = infOk || (inf && inf.erro ? { erro: inf.erro } : null);
+  if (infOk) out.fontes.push({
+    title: `[inflacao] CPI - ${infOk.mes}: ${infOk.cpi.anual}% em 12 meses, nucleo ${infOk.nucleo.anual}%`,
+    url: 'https://www.bls.gov/news.release/cpi.nr0.htm', date: infOk.mes
+  });
+  out.cobertura = { documentos: bons.length, tentados: docs.length, payroll: !!payOk, inflacao: !!infOk };
   out.falhas = docs.filter(d => !d.ok).map(d => `${d.title.slice(0, 50)}: sem texto extraivel`);
   return out;
 }

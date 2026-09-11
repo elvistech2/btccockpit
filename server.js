@@ -9,6 +9,7 @@ const PRED = require('./preditivo');
 const TEC = require('./tecnico');
 const BACKUP = require('./backup');
 const PAYROLL = require('./payroll');
+const INFLACAO = require('./inflacao');
 const ESTADO = require('./estado');
 const FLUXOS = require('./fluxos');
 const CAMINHOS = require('./paths');
@@ -331,6 +332,10 @@ http.createServer(async (req, res) => {
   if (url.startsWith('/api/estado')) {
     const d = Math.min(90, Math.max(3, +(url.match(/dias=(\d+)/) || [])[1] || 14));
     try { return json(res, await ESTADO.ler(d)); }
+    catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
+  }
+  if (url.startsWith('/api/inflacao')) {
+    try { return json(res, await INFLACAO.ler()); }
     catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
   }
   if (url.startsWith('/api/payroll')) {

@@ -513,7 +513,8 @@
           </div>
           <div class="rule"></div>
           <div id="payroll"><div class="st">carregando o último payroll…</div></div>
-          <div id="fed-body"><div class="st">Nunca rodou nesta sessão. Puxa os documentos do federalreserve.gov e o último payroll do BLS, e garimpa só o que empurra cripto.</div></div>
+          <div id="inflacao"><div class="st">carregando a última inflação…</div></div>
+          <div id="fed-body"><div class="st">Nunca rodou nesta sessão. Puxa os documentos do federalreserve.gov, o último payroll e a última inflação do BLS, e garimpa só o que empurra cripto.</div></div>
         </div>
 
         <div class="block">
@@ -1144,6 +1145,38 @@ async function carregarPayroll(){
     <div class="st">Mercado de trabalho <b>${p.forcaMercado}</b> — ${p.viesJuro}. Emprego fraco empurra o Fed a cortar juro,
       o que costuma favorecer cripto; emprego forte com salário subindo faz o contrário.
       ${p.proximo?'Próximo em '+p.proximo.dia.split('-').reverse().join('/')+'.':''}</div>
+  </div>`;
+}
+
+/* ---------- inflação: o outro lado da balança do Fed ---------- */
+S.inflacao=null;
+async function carregarInflacao(){
+  const el=$('#inflacao'); if(!el) return;
+  const x=await api('/api/inflacao');
+  if(!x||x.error){ el.innerHTML='<div class="st"><span class="sell">inflação:</span> '+((x&&x.error)||'BLS não respondeu')+'</div>'; return; }
+  S.inflacao=x; marcar('inflação (BLS)',true); pintarFontes();
+  const sg=v=>v==null?'—':(v>=0?'+':'')+nf(v,1)+'%';
+  const corInf=v=>v==null?'var(--dim)':v<=2.5?'var(--buy)':v<3.2?'var(--warn)':'var(--sell)';
+  const seta=(a,b)=>a==null||b==null?'':a>b?' <span class="sell">▲</span>':a<b?' <span class="buy">▼</span>':'';
+  const max=Math.max(4,...x.serie.map(s=>Math.max(s.cheio||0,s.nucleo||0)));
+  const barras=x.serie.map(s=>`<span class="pbar" title="${s.rotulo}: cheio ${s.cheio}% · núcleo ${s.nucleo}%">
+      <span style="display:flex;gap:2px;align-items:flex-end;height:28px">
+        <i style="height:${Math.max(2,s.cheio/max*28)}px;width:8px;background:${corInf(s.cheio)}"></i>
+        <i style="height:${Math.max(2,(s.nucleo||0)/max*28)}px;width:8px;background:${corInf(s.nucleo)};opacity:.55"></i>
+      </span><em>${s.rotulo.slice(0,3)}</em></span>`).join('');
+  el.innerHTML=`<div class="payroll">
+    <div class="chips">
+      <span class="chip">inflação (CPI) <b style="color:${corInf(x.cpi.anual)}">${sg(x.cpi.anual)}</b> em 12m${seta(x.cpi.anual,x.cpi.anualAnterior)}</span>
+      <span class="chip dim2">${x.mes}</span>
+      <span class="chip">núcleo <b style="color:${corInf(x.nucleo.anual)}">${sg(x.nucleo.anual)}</b>${seta(x.nucleo.anual,x.nucleo.anualAnterior)}</span>
+      <span class="chip">no mês <b>${sg(x.cpi.mensal)}</b> · núcleo <b>${sg(x.nucleo.mensal)}</b></span>
+      ${x.nucleo.tresMesesAnualizado!=null?`<span class="chip">núcleo 3m anualizado <b style="color:${corInf(x.nucleo.tresMesesAnualizado)}">${sg(x.nucleo.tresMesesAnualizado)}</b></span>`:''}
+      ${x.ppi?`<span class="chip">produtor (PPI) <b>${sg(x.ppi.anual)}</b>${x.ppi.preliminar?' <span class="dim2">prelim.</span>':''}</span>`:''}
+    </div>
+    <div class="pbars">${barras}</div>
+    <div class="st">Núcleo <b>${x.direcao}</b>, ${x.distanciaMeta!=null?nf(Math.abs(x.distanciaMeta),1)+' ponto'+(Math.abs(x.distanciaMeta)>=2?'s':'')+(x.distanciaMeta>=0?' acima':' abaixo')+' da meta de 2%':''} — ${x.viesJuro}.
+      Inflação alta segura o corte de juro (ruim pra cripto); inflação cedendo abre espaço (bom).
+      Barra cheia = CPI cheio, barra clara = núcleo. ${x.proximo?'Próximo CPI em '+x.proximo.dia.split('-').reverse().join('/')+'.':''}</div>
   </div>`;
 }
 
@@ -2339,9 +2372,9 @@ montarLegenda();
 conectar();
 carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia(); carregarMercados();
 carregarFng(); carregarHistSent(); carregarSnaps(); carregarBackup(); frescor(); carregarChave();
-carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarEstado();
+carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); carregarEstado();
 setInterval(carregarEstado,300000);
-setInterval(carregarPayroll,6*3.6e6);
+setInterval(carregarPayroll,6*3.6e6); setInterval(carregarInflacao,6*3.6e6);
 setInterval(carregarTecnico,120000);
 setInterval(()=>{ if(S.fx) carregarFluxos(true); },600000);
 $('#preco-add').onclick=()=>{ const v=+$('#preco-novo').value; if(v){ criarAlertaPreco(v); $('#preco-novo').value=''; } };

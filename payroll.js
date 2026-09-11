@@ -48,8 +48,8 @@ async function proximoRelease() {
       .map(m => Date.parse(m[1] + ' ' + m[2] + ', ' + m[3]))
       .filter(t => isFinite(t))
       .sort((a, b) => a - b);
-    const hoje = Date.now() - 12 * 3.6e6;
-    const proxima = datas.find(t => t > hoje);
+    const fimDeHoje = new Date(); fimDeHoje.setHours(23, 59, 59, 999);   // no dia do release o dado de hoje ja saiu
+    const proxima = datas.find(t => t > fimDeHoje.getTime());
     return proxima ? { t: proxima, dia: new Date(proxima).toISOString().slice(0, 10) } : null;
   } catch (e) { return null; }
 }
