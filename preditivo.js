@@ -57,6 +57,8 @@ const TICKERS = {
   juros10a: { s: '^TNX', nome: 'Juro 10 anos EUA' },
   dolar: { s: 'DX-Y.NYB', nome: 'Índice do dólar (DXY)' },
   nasdaq: { s: '^IXIC', nome: 'Nasdaq' },
+  spx: { s: '^GSPC', nome: 'S&P 500' },
+  petroleo: { s: 'CL=F', nome: 'Petróleo (WTI, barril)' },
   ouro: { s: 'GC=F', nome: 'Ouro' },
   btc: { s: 'BTC-USD', nome: 'Bitcoin' }
 };
@@ -97,6 +99,8 @@ async function macro() {
     if (series.btc && series.nasdaq) corr.btcNasdaq = correlacao(series.btc.slice(-31), series.nasdaq.slice(-31));
     if (series.btc && series.dolar) corr.btcDolar = correlacao(series.btc.slice(-31), series.dolar.slice(-31));
     if (series.btc && series.ouro) corr.btcOuro = correlacao(series.btc.slice(-31), series.ouro.slice(-31));
+    if (series.btc && series.spx) corr.btcSpx = correlacao(series.btc.slice(-31), series.spx.slice(-31));
+    if (series.btc && series.petroleo) corr.btcPetroleo = correlacao(series.btc.slice(-31), series.petroleo.slice(-31));
     return { ...out, correlacao30d: corr };
   });
 }

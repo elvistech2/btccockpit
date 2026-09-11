@@ -6,7 +6,7 @@ const path = require('path');
 const { DATA } = require('./paths');
 
 const ARQ = path.join(DATA, 'botoes.json');
-const NOMES = ['panico', 'rage', 'money', 'assopra', 'moeda', 'crash'];
+const NOMES = ['panico', 'rage', 'money', 'assopra', 'moeda', 'crash', 'pump'];
 
 function ler() {
   try { return JSON.parse(fs.readFileSync(ARQ, 'utf8')); } catch (e) { return {}; }

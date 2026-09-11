@@ -8,6 +8,7 @@ const { DATA } = require('./paths');
 const SENT = require('./sentiment');
 
 const ARQ = path.join(DATA, 'horoscopo.json');
+const VERSAO = 2;
 const SIGNOS = [
   { id: 'aries', nome: 'Áries', emoji: '♈', elemento: 'fogo' }, { id: 'touro', nome: 'Touro', emoji: '♉', elemento: 'terra' },
   { id: 'gemeos', nome: 'Gêmeos', emoji: '♊', elemento: 'ar' }, { id: 'cancer', nome: 'Câncer', emoji: '♋', elemento: 'água' },
@@ -51,25 +52,29 @@ function semIA(sig, m) {
   const rnd = semente(hoje() + sig.id);
   const sorteia = a => a[Math.floor(rnd() * a.length)];
   const subiu = (m.variacao || 0) >= 0;
-  const clima = m.variacao == null ? 'o mercado nem saiu da cama' : subiu
-    ? `o bitcoin subiu ${m.variacao}% e você já está se sentindo o Warren Buffett`
-    : `o bitcoin caiu ${Math.abs(m.variacao)}% e você já está pesquisando "vaga de motorista de aplicativo"`;
+  const energia = { fogo: 'iniciativa e coragem', terra: 'paciência e pé no chão', ar: 'ideias e boas conversas', 'água': 'intuição e sensibilidade' }[sig.elemento];
+  const clima = m.variacao == null ? 'o mercado acordou devagar, e tudo bem ir no seu ritmo' : subiu
+    ? `o bitcoin sobe ${m.variacao}% e o clima geral é de otimismo — aproveite essa maré boa, sem pressa`
+    : `o bitcoin recua ${Math.abs(m.variacao)}%, e dias assim pedem calma: nem tudo que cai é problema seu`;
   const titulos = subiu
-    ? ['Os astros estão verdes (por enquanto)', 'Mercúrio em alta, você em FOMO', 'Júpiter comprou no topo com você']
-    : ['Saturno liquidou sua posição', 'A lua está em candle vermelho', 'Marte em retrógrado, sua carteira também'];
-  const conselhos = ['Coloque um stop loss. Nos astros e na vida.', 'Desinstale o app de corretora por 24 horas. A carteira agradece.',
-    'Não opere depois das 23h. Nada de bom acontece depois das 23h.', 'Se o influencer está gritando, é hora de ficar quieto.',
-    'Beba água. O gráfico de 1 minuto não vai sentir sua falta.'];
-  const amores = ['Seu crush vê seus stories; sua corretora vê suas liquidações. Os dois ignoram.',
-    'Não misture alavancagem e relacionamento: os dois terminam em chamada de margem.',
-    'O amor da sua vida pode estar no grupo do zap. O golpe também.'];
-  const texto = `${sig.nome}, hoje ${clima}. ` +
-    (m.medo != null ? `O índice de medo e ganância está em ${m.medo}, ou seja, ${m.medo > 60 ? 'todo mundo eufórico — o que historicamente termina bem para ninguém' : m.medo < 40 ? 'todo mundo com medo, inclusive você, que jurou que era "diamond hands"' : 'o mercado está tão indeciso quanto você na hora de apertar o botão de venda'}. ` : '') +
-    `Com a energia de ${sig.elemento} do seu signo, a tendência é você ${subiu ? 'aumentar a alavancagem "só um pouquinho"' : 'vender exatamente no fundo, como manda a tradição'}.`;
+    ? ['Dia de colher o que plantou', 'Os astros estão no verde', 'Boa maré, pé no chão']
+    : ['Calma que o dia melhora', 'Paciência é o seu superpoder hoje', 'Dia de observar antes de agir'];
+  const conselhos = ['Anote uma decisão antes de tomá-la; relê-la depois evita arrependimento.',
+    'Faça uma pausa longe das telas no meio da tarde. As ideias boas aparecem no café.',
+    'Termine uma tarefa pendente antes de começar outra. Sua cabeça agradece.',
+    'Converse com alguém de confiança antes de decidir algo grande.',
+    'Durma cedo: amanhã você vai querer estar afiado.'];
+  const amores = ['Uma mensagem sincera vale mais que qualquer gráfico hoje.',
+    'Dia bom pra ouvir mais do que falar — alguém próximo precisa disso.',
+    'Um convite simples pode render a melhor conversa da semana.'];
+  const texto = `${sig.nome}, hoje ${clima}. Seu signo de ${sig.elemento} traz ${energia}, e é isso que vai te guiar: ` +
+    (subiu ? 'use o bom humor pra resolver o que estava parado e dividir as boas notícias.' : 'escolha bem onde gastar energia e deixe o resto pra amanhã.') +
+    (m.medo != null ? ` O mercado está com ${m.medo} de ${m.medo > 55 ? 'ganância' : m.medo < 45 ? 'medo' : 'equilíbrio'} no termômetro; você não precisa entrar no mesmo humor.` : '') +
+    ' No fim do dia, vai perceber que fez mais do que imaginava.';
   return {
     titulo: sorteia(titulos), texto, amor: sorteia(amores), conselho: sorteia(conselhos),
-    numero: Math.floor(rnd() * 99) + 1, cor: subiu ? 'verde candle' : 'vermelho liquidação',
-    compatibilidade: sorteia(['hodlers de 2017', 'quem já perdeu a seed phrase', 'o analista que só acerta depois', 'trader de 125x (fuja)'])
+    numero: Math.floor(rnd() * 99) + 1, cor: subiu ? 'verde' : 'azul-sereno',
+    compatibilidade: sorteia(SIGNOS.filter(s => s.elemento === sig.elemento && s.id !== sig.id).map(s => s.nome + ', pela mesma energia de ' + sig.elemento))
   };
 }
 
@@ -77,26 +82,28 @@ async function ler(signoId) {
   const sig = SIGNOS.find(s => s.id === signoId);
   if (!sig) throw new Error('signo desconhecido');
   const dia = hoje(), todos = lerArq();
-  if (todos[dia] && todos[dia][sig.id]) return { ...todos[dia][sig.id], signo: sig, dia, guardado: true };
+  // versao 2 = tom leve e com sentido pro dia; texto guardado da versao acida e refeito
+  if (todos[dia] && todos[dia][sig.id] && todos[dia][sig.id].versao === VERSAO) return { ...todos[dia][sig.id], signo: sig, dia, guardado: true };
 
   const m = await mercado();
   let h = null, origem = 'ia';
   try {
     const dataTxt = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
-    const prompt = `Você é um astrólogo cínico e ácido que só entende de cripto. Escreva o horóscopo de hoje (${dataTxt}) para ${sig.nome} (signo de ${sig.elemento}), em português do Brasil, bem-humorado e debochado, zoando o trader e o mercado.
-Use os números REAIS de hoje: bitcoin a $${m.preco ?? '?'} (${m.variacao ?? '?'}% em 24 horas), índice de medo e ganância ${m.medo ?? '?'} (${m.medoTexto ?? '?'}), taxa de funding ${m.funding ?? '?'}%.
-Regras:
-- Humor ácido sobre alavancagem, FOMO, influencer de cripto, grupo do zap, "dessa vez é diferente", stop loss, comprar no topo. Pode zoar o próprio leitor.
-- Nada de ofensa a grupos de pessoas (raça, religião, gênero, orientação, origem) e nada de política.
-- É piada: nunca dê recomendação real de compra ou venda.
-- Texto principal com 55 a 85 palavras, citando pelo menos um dos números de hoje de um jeito engraçado.
-Responda em JSON: {"titulo":"3 a 7 palavras","texto":"...","amor":"uma frase sobre amor e alavancagem","conselho":"conselho absurdo mas no fundo sensato","numero":inteiro de 1 a 99,"cor":"cor da sorte com piada","compatibilidade":"tipo de trader ou signo compatível, com piada"}`;
+    const prompt = `Você é um astrólogo simpático e bem-humorado que também acompanha o mercado de bitcoin. Escreva o horóscopo de hoje (${dataTxt}) para ${sig.nome} (signo de ${sig.elemento}), em português do Brasil.
+Clima do mercado hoje, pra usar de pano de fundo: bitcoin a $${m.preco ?? '?'} (${m.variacao ?? '?'}% em 24 horas), índice de medo e ganância ${m.medo ?? '?'} (${m.medoTexto ?? '?'}).
+Regras de tom e conteúdo:
+- Leve e divertido, com humor gentil. Nada de deboche, ironia pesada ou crítica ao leitor: ele deve terminar de ler com um sorriso.
+- Tem que ter sentido pro dia da pessoa: fale de energia, foco, trabalho, relações, decisões, paciência, impulsos. O mercado entra como tempero, de forma natural, citando de leve um dos números de hoje.
+- O dia pode ser bom ou desafiador (decida pelo signo e pelo clima dos números), mas sempre termine com uma orientação útil e otimista.
+- Sem recomendação de compra ou venda, sem política, sem ofensa a ninguém.
+- Texto principal com 60 a 90 palavras.
+Responda em JSON: {"titulo":"3 a 7 palavras","texto":"...","amor":"uma frase leve sobre amor e relações hoje","conselho":"um conselho prático pro dia, com uma pitada de humor","numero":inteiro de 1 a 99,"cor":"cor da sorte","compatibilidade":"signo que combina com você hoje, com o motivo em poucas palavras"}`;
     h = await SENT.gemini(prompt, 1.0);
     if (!h || !h.texto) throw new Error('IA devolveu vazio');
   } catch (e) {
     h = semIA(sig, m); origem = 'modelo';
   }
-  const item = { ...h, origem, mercado: m, t: Date.now() };
+  const item = { ...h, origem, mercado: m, t: Date.now(), versao: VERSAO };
   // so guarda o da IA: o do gerador proprio pode tentar a IA de novo mais tarde
   if (origem === 'ia') { todos[dia] = todos[dia] || {}; todos[dia][sig.id] = item; gravarArq(todos); }
   return { ...item, signo: sig, dia, guardado: false };
