@@ -12,3 +12,4 @@ linux/btc-radar.desktop text eol=lf
 *.rc text eol=crlf
 windows/LEIA-ME.txt text eol=crlf
 *.ico binary
+*.mp3 binary

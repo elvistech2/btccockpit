@@ -28,7 +28,7 @@ const PORT = +(process.env.BTC_RADAR_PORT || 8899);
 // configuracao, entao nao pode ficar aberto pra rede sem a pessoa querer.
 // Para abrir pro celular ou pra outro computador da casa: BTC_RADAR_HOST=0.0.0.0
 const HOST = process.env.BTC_RADAR_HOST || '127.0.0.1';
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.ico': 'image/x-icon' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.ico': 'image/x-icon', '.mp3': 'audio/mpeg' };
 
 CAMINHOS.garantir(DATA);
 

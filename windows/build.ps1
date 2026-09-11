@@ -122,6 +122,8 @@ foreach ($f in $arquivos) {
 Copy-Item $exeSaida (Join-Path $app 'BTC Radar.exe')
 Copy-Item (Join-Path $win 'BTC Radar (com janela).cmd') $app
 Copy-Item (Join-Path $win 'LEIA-ME.txt') $app
+# sons que vem com o programa (botoes de humor)
+if (Test-Path (Join-Path $raiz 'sons')) { Copy-Item (Join-Path $raiz 'sons') (Join-Path $app 'sons') -Recurse }
 New-Item -ItemType Directory -Path (Join-Path $app 'node') -Force | Out-Null
 Copy-Item (Join-Path $nodeDir 'node.exe') (Join-Path $app 'node\node.exe')
 Set-Content -Path (Join-Path $app 'node\VERSAO.txt') -Value $nodeVersao -Encoding ASCII

@@ -461,7 +461,7 @@
           <div class="instantBotoes">
             <button class="ibtn panico" data-b="panico" title="respira, vai passar"><i></i><span>PÂNICO</span></button>
             <button class="ibtn rage" data-b="rage" title="deixa sair"><i></i><span>RAGE</span></button>
-            <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span class="lg">MONEY BABY</span><span class="ct">MONEY</span></button>
+            <button class="ibtn money" data-b="money" title="quando o verde bate"><i></i><span>MONEY</span></button>
             <button class="ibtn assopra" data-b="assopra" title="clica rápido e sem parar: o gráfico sobe. Só na tela, é claro"><i></i><span class="lg">ASSOPRA</span><span class="ct">SOPRA</span></button>
             <button class="ibtn moeda" data-b="moeda" title="cara ou coroa pra decidir"><i></i><span>SORTE?</span></button>
           </div>
@@ -2727,11 +2727,29 @@ function musicaMoney(c,dest){
 
 /* ---- som próprio da pessoa (⚙): link ou arquivo, guardado só aqui ---- */
 const somProprio=nome=>{ try{ return JSON.parse(localStorage.getItem('btcr-som-'+nome)||'null'); }catch(e){ return null; } };
-function tocarProprio(nome,loop){
-  const cfg=somProprio(nome); if(!cfg||!cfg.valor) return null;
-  const a=new Audio(cfg.valor); a.loop=!!loop; a.volume=.85;
-  a.play().catch(()=>toast('Seu som não tocou','O link ou arquivo do botão '+HUMOR[nome].nome+' falhou — voltei pro som padrão.','erro'));
+// Som que vem com o programa (pasta sons/). O do ⚙ da pessoa tem prioridade; se nenhum
+// arquivo tocar, o efeito cai pro som gerado aqui (semSom).
+const SONS_PADRAO={money:'/sons/money.mp3',rage:'/sons/rage.mp3'};
+function tocarProprio(nome,loop,semSom){
+  const cfg=somProprio(nome);
+  const url=cfg&&cfg.valor?cfg.valor:SONS_PADRAO[nome];
+  if(!url) return null;
+  const a=new Audio(url); a.loop=!!loop; a.volume=.85;
+  a.play().catch(()=>{
+    if(!fxAtual||fxAtual.audio!==a) return;            // efeito ja acabou ou trocou
+    fxAtual.audio=null;
+    if(cfg&&cfg.valor) toast('Seu som não tocou','O link ou arquivo do botão '+HUMOR[nome].nome+' falhou — tocando o som padrão.','erro');
+    clearTimeout(fxAtual.fim); fxAtual.fim=setTimeout(pararHumor,HUMOR[nome].dur);
+    if(semSom) semSom();
+  });
   return a;
+}
+// com arquivo de audio, o efeito dura o que o audio dura (no minimo 5 s, no maximo 20 s)
+function durarComAudio(a){
+  if(!a||a.loop||!fxAtual) return;
+  const inicio=Date.now();
+  clearTimeout(fxAtual.fim); fxAtual.fim=setTimeout(pararHumor,20000);
+  a.onended=()=>{ if(fxAtual&&fxAtual.audio===a) setTimeout(()=>{ if(fxAtual&&fxAtual.audio===a) pararHumor(); },Math.max(0,5000-(Date.now()-inicio))+400); };
 }
 
 /* ---- efeito na tela ---- */
@@ -2830,9 +2848,9 @@ function efeitoRage(){
       </svg>
     </div>
     <div class="ragePe">clique pra se recompor</div>`;
-  const a=tocarProprio('rage',false);
-  if(a) fxAtual.audio=a;
-  else { const t=c.currentTime+.03; somGrito(c,mestre,t); somTrombone(c,mestre,t+1.9); }
+  const sintetico=()=>{ const t=c.currentTime+.03; somGrito(c,mestre,t); somTrombone(c,mestre,t+1.9); };
+  const a=tocarProprio('rage',false,sintetico);
+  if(a){ fxAtual.audio=a; durarComAudio(a); } else sintetico();
   fxAtual.timers.push(setInterval(()=>{ const el=ov.querySelector('.rageTexto'); if(el) el.textContent=sorteia(gritos); },1500));
 }
 
@@ -2841,8 +2859,8 @@ function efeitoMoney(){
   const frases=['o mercado lembrou que você existe','compra um cafezinho, você merece','não conta pro leão','printa antes que vire meme de rage','realiza um pouquinho, vai','hoje o gráfico te ama'];
   ov.innerHTML=`<canvas id="chuva"></canvas>
     <div class="moneyTexto"><b>MONEY BABY</b><span>${sorteia(frases)}</span></div>`;
-  const a=tocarProprio('money',true);
-  if(a) fxAtual.audio=a; else fxAtual.musica=musicaMoney(c,mestre);
+  const a=tocarProprio('money',false,()=>{ if(fxAtual&&fxAtual.tipo==='money') fxAtual.musica=musicaMoney(c,mestre); });
+  if(a){ fxAtual.audio=a; durarComAudio(a); } else fxAtual.musica=musicaMoney(c,mestre);
   // chuva de dinheiro: notas desenhadas, girando e balançando enquanto caem
   const cv=$('#chuva'), g=cv.getContext('2d');
   const tam=()=>{ cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio; g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); };
@@ -2925,7 +2943,7 @@ $('#instantCfg').onclick=()=>{
         <label class="btn" style="cursor:pointer">arquivo<input type="file" accept="audio/*" data-n="${n}" hidden></label>
         <button class="btn" data-salvar="${n}">salvar</button>
         <button class="btn" data-limpar="${n}" title="voltar pro som padrão">padrão</button>
-        <span class="dim2">${s?(s.tipo==='arquivo'?'arquivo: '+escHtml(s.nome):'link próprio'):'som padrão'}</span></div>`; }).join('');
+        <span class="dim2">${s?(s.tipo==='arquivo'?'arquivo: '+escHtml(s.nome):'link próprio'):(SONS_PADRAO[n]?'som do programa':'som gerado')}</span></div>`; }).join('');
   el.querySelectorAll('[data-salvar]').forEach(b=>b.onclick=()=>{
     const n=b.dataset.salvar, v=$('#som-url-'+n).value.trim();
     if(!/^https?:\/\/\S+$/i.test(v)){ toast('Link inválido','Cole um endereço que comece com http e aponte direto pro áudio.','erro'); return; }
