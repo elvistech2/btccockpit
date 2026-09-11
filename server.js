@@ -12,6 +12,8 @@ const PAYROLL = require('./payroll');
 const INFLACAO = require('./inflacao');
 const ATUALIZADOR = require('./atualizador');
 const BOTOES = require('./botoes');
+const AGENDA = require('./agenda');
+const OPCOES = require('./opcoes');
 
 // Pedido que muda alguma coisa (grava chave, instala versao) tem que trazer este cabecalho.
 // Pagina de outro site ate consegue mandar POST pro localhost, mas nao com cabecalho
@@ -321,6 +323,14 @@ http.createServer(async (req, res) => {
     const ultimo = history.length ? (history[history.length - 1].mark || history[history.length - 1].spot) : null;
     const h = Math.min(720, Math.max(1, +(url.match(/horasFita=(\d+)/) || [])[1] || 1));
     try { return json(res, await FLUXOS.tudo(d, ultimo, h)); }
+    catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
+  }
+  if (url.startsWith('/api/opcoes')) {
+    try { return json(res, await OPCOES.ler()); }
+    catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
+  }
+  if (url.startsWith('/api/agenda')) {
+    try { return json(res, await AGENDA.ler()); }
     catch (e) { return json(res, { error: String(e.message || e).slice(0, 200) }); }
   }
   if (url.startsWith('/api/botoes')) {

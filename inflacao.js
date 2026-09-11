@@ -18,7 +18,32 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
   'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 const META = 2;                // meta de inflacao do Fed (ele mira o PCE, que o BLS nao publica)
 
+const fs = require('fs');
+const path = require('path');
+const { DATA } = require('./paths');
+const DISCO = path.join(DATA, 'bls-inflacao.json');
 let cache = null;
+
+// o dado muda uma vez por mes: guardar em disco evita gastar a cota do BLS a cada
+// reinicio, e deixa mostrar o ultimo numero bom quando o BLS negar a consulta
+function doDisco() { try { return JSON.parse(fs.readFileSync(DISCO, 'utf8')); } catch (e) { return null; } }
+function proDisco(v) { try { fs.mkdirSync(DATA, { recursive: true }); fs.writeFileSync(DISCO, JSON.stringify({ t: Date.now(), v })); } catch (e) { } }
+async function ler() {
+  if (cache && Date.now() - cache.t < 6 * 3.6e6) return cache.v;
+  const disco = doDisco();
+  if (disco && Date.now() - disco.t < 6 * 3.6e6) { cache = disco; return disco.v; }
+  try {
+    const v = await buscar();
+    proDisco(v); cache = { t: Date.now(), v };
+    return v;
+  } catch (e) {
+    if (!disco) throw e;
+    // BLS fora do ar ou cota do dia acabou: devolve o ultimo bom e tenta de novo em 1 hora
+    const v = { ...disco.v, velho: true, guardadoEm: disco.t, erroAtual: String(e.message || e).slice(0, 160) };
+    cache = { t: Date.now() - 5 * 3.6e6, v };
+    return v;
+  }
+}
 async function jget(url, opts = {}) {
   const c = new AbortController();
   const to = setTimeout(() => c.abort(), 20000);
@@ -61,8 +86,7 @@ async function proximo(pagina) {
   } catch (e) { return null; }
 }
 
-async function ler() {
-  if (cache && Date.now() - cache.t < 6 * 3.6e6) return cache.v;
+async function buscar() {
   const ano = new Date().getFullYear();
   const j = await jget('https://api.bls.gov/publicAPI/v2/timeseries/data/', {
     method: 'POST',
@@ -120,7 +144,6 @@ async function ler() {
         : v.direcao === 'desacelerando'
           ? 'cedendo, mas ainda acima da meta — corte possível, sem pressa'
           : 'acima da meta e sem ceder — o Fed tende a esperar';
-  cache = { t: Date.now(), v };
   return v;
 }
 
@@ -140,4 +163,4 @@ function paraPrompt(x) {
   return l.join('\n');
 }
 
-module.exports = { ler, paraPrompt };
+module.exports = { ler, paraPrompt, proximo };

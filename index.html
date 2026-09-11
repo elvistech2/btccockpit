@@ -163,6 +163,23 @@
   table.grid td{text-align:right;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
   table.grid tbody tr:hover{background:rgba(255,255,255,.03)}
   .payroll{margin:10px 0 14px}
+  .opRegua{position:relative;height:62px;margin:16px 6px 8px}
+  .opTrilho{position:absolute;left:0;right:0;top:24px;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(25,224,138,.35),rgba(255,255,255,.08) 50%,rgba(255,66,86,.35))}
+  .opMarca{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font:9.5px var(--mono);white-space:nowrap}
+  .opMarca b{font:600 9px var(--ui);letter-spacing:1px;text-transform:uppercase;color:var(--dim2)}
+  .opMarca i{order:2;display:block;width:3px;height:16px;border-radius:2px;margin:3px 0}
+  .opMarca em{order:3;font-style:normal;color:var(--dim)}
+  .opMarca.baixo b{order:4;margin-top:2px}
+  .opMarca.baixo{padding-top:12px}   /* sem o nome em cima, o risco continua na altura do trilho */
+  .opMarca.agora i{background:#fff;height:20px;width:4px;box-shadow:0 0 8px rgba(255,255,255,.7)} .opMarca.agora b{color:var(--txt)}
+  .opMarca.dor i{background:#ffb020} .opMarca.piso i{background:var(--buy)} .opMarca.teto i{background:var(--sell)}
+  .opSinais{display:grid;gap:10px;margin:12px 0 10px}
+  .opSinal{border-left:2px solid var(--hair2);padding-left:10px}
+  .opTopo{display:flex;justify-content:space-between;gap:10px;font:12px var(--ui)} .opTopo span{font:10px var(--mono)}
+  .agLinha{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .agIco{font-size:17px;text-align:center}
+  .agTxt b{display:block;font:600 12px var(--ui)} .agTxt .dim2{font:10.5px var(--mono);line-height:1.5}
+  .agConta{font:700 14px var(--mono);white-space:nowrap}
   .pbars{display:flex;gap:10px;align-items:flex-end;height:34px;margin:12px 0 8px}
   .pbar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;cursor:default}
   .pbar i{display:block;width:18px;border-radius:1px}
@@ -429,6 +446,7 @@
     <div class="stat opt"><span class="lbl">Basis</span><b id="c-basis">—</b></div>
     <div class="stat opt"><span class="lbl">Liquidações 1h</span><b id="c-liq">—</b></div>
     <div class="stat" id="badge"><span class="lbl">Técnico</span><b class="dim2">—</b></div>
+    <div class="stat" id="fedCont" style="cursor:pointer" title="próxima decisão de juros do Fed · clique pra ver a agenda"><span class="lbl">Fed decide em</span><b class="dim2">—</b></div>
     <div class="views" id="views">
       <button data-v="radar" class="on">Visão geral</button>
       <button data-v="sent">Sentimento</button>
@@ -635,6 +653,21 @@
           <div class="rule"></div>
           <div id="sv-pred"><div class="st">carregando…</div></div>
         </div>
+
+        <div class="block">
+          <div class="h2" style="display:flex;align-items:center;gap:10px">
+            <span>Opções: onde o dinheiro grande aposta<small>Deribit, a maior bolsa de opções de bitcoin · traduzido pra quem não opera opção</small></span>
+            <span class="classic" id="opGlos" style="margin-left:auto;cursor:pointer">o que é isso?</span>
+          </div>
+          <div class="rule"></div>
+          <div id="opGlossario" class="st" hidden style="line-height:1.7;margin-bottom:10px">
+            <b>Opção</b> é um contrato que dá o direito de comprar ou vender bitcoin a um preço combinado até uma data.
+            Quem compra <b>aposta de alta</b> (call) ganha se o preço subir; quem compra <b>seguro contra queda</b> (put) ganha se cair —
+            é assim que fundo grande se protege. Por isso olhar opções mostra o que o dinheiro grande <b>teme</b> e o que ele <b>espera</b>.
+            <b>Dor máxima</b> é o preço em que, no vencimento, a maior parte das apostas termina valendo zero.
+          </div>
+          <div id="opcoes"><div class="st">carregando opções…</div></div>
+        </div>
       </div>
 
       <div>
@@ -645,6 +678,12 @@
           </div>
           <div class="rule"></div>
           <div id="news-body"><div class="st">Nunca rodou nesta sessão. O robô lê as manchetes das últimas 36h e manda pro Gemini pontuar. Leva de 20 a 60 segundos.</div></div>
+        </div>
+
+        <div class="block" id="agendaBloco">
+          <div class="h2">Agenda que mexe com o juro<small>decisões do Fed e os dados que pesam nelas · horário de Brasília</small></div>
+          <div class="rule"></div>
+          <div id="agenda"><div class="st">carregando a agenda…</div></div>
         </div>
 
         <div class="block">
@@ -1281,6 +1320,7 @@ async function carregarPayroll(){
   const p=await api('/api/payroll');
   if(!p||p.error){ el.innerHTML='<div class="st"><span class="sell">payroll:</span> '+((p&&p.error)||'BLS não respondeu')+'</div>'; return; }
   S.payroll=p; marcar('payroll (BLS)',true); pintarFontes();
+  const velhoP=p.velho?'<div class="st" style="color:var(--warn)">dado guardado em '+new Date(p.guardadoEm).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' — o BLS não respondeu agora (limite diário de consultas); tento de novo sozinho</div>':'';
   const corVaga=v=>v>=150?'var(--buy)':v>=50?'var(--warn)':'var(--sell)';
   const seta=(a,b)=>a==null||b==null?'':a>b?' <span class="sell">▲</span>':a<b?' <span class="buy">▼</span>':'';
   const mini=p.serie.slice(-6).map(x=>{
@@ -1288,7 +1328,7 @@ async function carregarPayroll(){
     return `<span class="pbar" title="${x.rotulo}: ${x.vagas>=0?'+':''}${x.vagas} mil vagas">
       <i style="height:${alt}px;background:${x.vagas>=0?'var(--buy)':'var(--sell)'}"></i>
       <em>${x.rotulo.slice(0,3)}</em></span>`;}).join('');
-  el.innerHTML=`<div class="payroll">
+  el.innerHTML=velhoP+`<div class="payroll">
     <div class="chips">
       <span class="chip">último payroll <b style="color:${corVaga(p.vagas)}">${p.vagas>=0?'+':''}${nf(p.vagas,0)} mil vagas</b></span>
       <span class="chip dim2">${p.mes}${p.preliminar?' · preliminar':''}</span>
@@ -1303,6 +1343,84 @@ async function carregarPayroll(){
   </div>`;
 }
 
+/* ---------- opções da Deribit, traduzidas ---------- */
+S.opcoes=null;
+async function carregarOpcoes(){
+  const j=await api('/api/opcoes'); const el=$('#opcoes'); if(!el) return;
+  if(!j||j.error){ el.innerHTML='<div class="st"><span class="sell">opções:</span> '+escHtml((j&&j.error)||'Deribit não respondeu')+'</div>'; return; }
+  S.opcoes=j; marcar('opções (Deribit)',true); pintarFontes(); pintarOpcoes();
+}
+function pintarOpcoes(){
+  const o=S.opcoes, el=$('#opcoes'); if(!o||!el) return;
+  const n=o.numeros, cor=o.nota>=8?'var(--buy)':o.nota<=-8?'var(--sell)':'var(--warn)';
+  const icone={bom:'<span class="buy">▲ bom</span>',ruim:'<span class="sell">▼ ruim</span>',neutro:'<span class="dim2">● neutro</span>'};
+  // régua: do piso ao teto, com o preço de agora e a dor máxima marcados
+  const pts=[n.piso,n.teto,n.maxPain,o.preco].filter(v=>v);
+  const lo=Math.min(...pts)*.985, hi=Math.max(...pts)*1.015, pos=v=>((v-lo)/(hi-lo)*100).toFixed(1);
+  // marcas muito perto uma da outra: a segunda põe o nome embaixo pra não encavalar
+  const ordem=[[n.piso,'piso'],[n.maxPain,'dor'],[o.preco,'agora'],[n.teto,'teto']].filter(x=>x[0]).sort((a,b)=>a[0]-b[0]);
+  const embaixo=new Set(); ordem.forEach((x,i)=>{ if(i&&!embaixo.has(ordem[i-1][1])&&pos(x[0])-pos(ordem[i-1][0])<16) embaixo.add(x[1]); });
+  const marca=(v,cls,rot)=>v?'<span class="opMarca '+cls+(embaixo.has(cls)?' baixo':'')+'" style="left:'+pos(v)+'%"><i></i><b>'+rot+'</b><em>$'+nf(v,0)+'</em></span>':'';
+  el.innerHTML=
+    '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">'+
+      '<span class="bigScore" style="font-size:30px;color:'+cor+'">'+o.veredito+'</span>'+
+      '<span class="st">'+escHtml(o.resumo)+'</span></div>'+
+    '<div class="opRegua"><div class="opTrilho"></div>'+
+      marca(n.piso,'piso','piso')+marca(n.maxPain,'dor','dor máxima')+marca(o.preco,'agora','agora')+marca(n.teto,'teto','teto')+'</div>'+
+    '<div class="opSinais">'+o.sinais.map(s=>'<div class="opSinal"><div class="opTopo"><b>'+escHtml(s.nome)+'</b>'+icone[s.tom]+'</div><div class="st">'+escHtml(s.texto)+'</div></div>').join('')+'</div>'+
+    (o.muralhas?'<div class="st">'+escHtml(o.muralhas)+'</div>':'')+
+    '<div class="st dim2" style="margin-top:6px">'+nf(n.apostasAbertas,0)+' BTC em opções abertas · '+(n.ivAtm?'volatilidade esperada '+nf(n.ivAtm,1)+'% ao ano · ':'')+'atualizado '+hhmm(o.t)+'</div>';
+}
+$('#opGlos').onclick=()=>{ const g=$('#opGlossario'); g.hidden=!g.hidden; };
+setInterval(carregarOpcoes,5*6e4);
+
+/* ---------- agenda: contagem regressiva do Fed ---------- */
+S.agenda=null;
+async function carregarAgenda(){
+  const j=await api('/api/agenda'); if(!j||j.error) return;
+  S.agenda=j; marcar('agenda do Fed',true); pintarFontes(); pintarAgenda(); tickFed();
+}
+// "5d 03h", "31h 12m", "42:10" — quanto mais perto, mais preciso
+function faltam(ms){
+  if(ms<=0) return 'agora';
+  const d=Math.floor(ms/864e5), h=Math.floor(ms%864e5/3.6e6), m=Math.floor(ms%3.6e6/6e4), s=Math.floor(ms%6e4/1000);
+  if(ms>=48*3.6e6) return d+'d '+String(h).padStart(2,'0')+'h';
+  if(ms>=3.6e6) return (d*24+h)+'h '+String(m).padStart(2,'0')+'m';
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function tickFed(){
+  const el=$('#fedCont'); if(!el||!S.agenda) return;
+  const ev=S.agenda.eventos||[], agora=Date.now();
+  const recente=ev.find(e=>e.tipo==='fomc'&&e.t<=agora&&agora-e.t<3*3.6e6);
+  const prox=ev.find(e=>e.tipo==='fomc'&&e.t>agora);
+  if(recente){
+    const min=Math.round((agora-recente.t)/6e4);
+    el.innerHTML='<span class="lbl">Fed decidiu</span><b style="color:var(--data)">há '+(min<60?min+' min':Math.floor(min/60)+'h'+String(min%60).padStart(2,'0'))+'</b>';
+    el.title='a decisão já saiu · clique pra ir pra análise do Fed';
+    return;
+  }
+  if(!prox){ el.innerHTML='<span class="lbl">Fed decide em</span><b class="dim2">—</b>'; return; }
+  const ms=prox.t-agora;
+  const cor=ms<3.6e6?'var(--sell)':ms<24*3.6e6?'var(--warn)':'var(--txt)';
+  el.innerHTML='<span class="lbl">Fed decide em'+(prox.projecoes?' ·&nbsp;com projeções':'')+'</span><b style="color:'+cor+'">'+faltam(ms)+'</b>';
+  el.title='decisão de juros: '+prox.quando+' (Brasília)'+(prox.projecoes?' · com o gráfico de pontos dos dirigentes':'')+' · clique pra ver a agenda';
+}
+function pintarAgenda(){
+  const el=$('#agenda'); if(!el||!S.agenda) return;
+  const icone={fomc:'🏛️',cpi:'🧾',payroll:'👷'};
+  el.innerHTML=(S.agenda.eventos||[]).map(e=>{
+    const ms=e.t-Date.now();
+    const cor=e.jaSaiu?'var(--data)':ms<3.6e6?'var(--sell)':ms<24*3.6e6?'var(--warn)':'var(--txt)';
+    return '<div class="agLinha"><span class="agIco">'+icone[e.tipo]+'</span>'+
+      '<span class="agTxt"><b>'+e.nome+'</b><span class="dim2">'+e.quando+' · '+e.detalhe+'</span></span>'+
+      '<b class="agConta" style="color:'+cor+'">'+(e.jaSaiu?'saiu':faltam(ms))+'</b></div>';
+  }).join('')||'<div class="st">sem eventos na agenda</div>';
+  if(S.agenda.erroFed) el.insertAdjacentHTML('beforeend','<div class="st" style="color:var(--warn)">calendário do Fed não respondeu: '+escHtml(S.agenda.erroFed)+'</div>');
+}
+setInterval(()=>{ tickFed(); if(document.body.dataset.view==='sent') pintarAgenda(); },1000);
+setInterval(carregarAgenda,30*6e4);
+$('#fedCont').onclick=()=>{ mostrarView('sent'); setTimeout(()=>{ const b=$('#agendaBloco'); if(b) b.scrollIntoView({behavior:'smooth',block:'start'}); },250); };
+
 /* ---------- inflação: o outro lado da balança do Fed ---------- */
 S.inflacao=null;
 async function carregarInflacao(){
@@ -1310,6 +1428,7 @@ async function carregarInflacao(){
   const x=await api('/api/inflacao');
   if(!x||x.error){ el.innerHTML='<div class="st"><span class="sell">inflação:</span> '+((x&&x.error)||'BLS não respondeu')+'</div>'; return; }
   S.inflacao=x; marcar('inflação (BLS)',true); pintarFontes();
+  const velhoI=x.velho?'<div class="st" style="color:var(--warn)">dado guardado em '+new Date(x.guardadoEm).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' — o BLS não respondeu agora (limite diário de consultas); tento de novo sozinho</div>':'';
   const sg=v=>v==null?'—':(v>=0?'+':'')+nf(v,1)+'%';
   const corInf=v=>v==null?'var(--dim)':v<=2.5?'var(--buy)':v<3.2?'var(--warn)':'var(--sell)';
   const seta=(a,b)=>a==null||b==null?'':a>b?' <span class="sell">▲</span>':a<b?' <span class="buy">▼</span>':'';
@@ -1319,7 +1438,7 @@ async function carregarInflacao(){
         <i style="height:${Math.max(2,s.cheio/max*28)}px;width:8px;background:${corInf(s.cheio)}"></i>
         <i style="height:${Math.max(2,(s.nucleo||0)/max*28)}px;width:8px;background:${corInf(s.nucleo)};opacity:.55"></i>
       </span><em>${s.rotulo.slice(0,3)}</em></span>`).join('');
-  el.innerHTML=`<div class="payroll">
+  el.innerHTML=velhoI+`<div class="payroll">
     <div class="chips">
       <span class="chip">inflação (CPI) <b style="color:${corInf(x.cpi.anual)}">${sg(x.cpi.anual)}</b> em 12m${seta(x.cpi.anual,x.cpi.anualAnterior)}</span>
       <span class="chip dim2">${x.mes}</span>
@@ -3119,7 +3238,7 @@ montarLegenda();
 conectar();
 carregarBase(); carregarLivro(); carregarLiqs(); carregarInteligencia(); carregarMercados();
 carregarFng(); carregarHistSent(); carregarSnaps(); carregarBackup(); frescor(); carregarChave();
-carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); setTimeout(checarAtualizacao,1500);
+carregarTecnico(); pintarPrecos(); pintarCvd(); carregarPayroll(); carregarInflacao(); carregarAgenda(); carregarOpcoes(); setTimeout(checarAtualizacao,1500);
 setInterval(checarAtualizacao,3.6e6); carregarEstado();
 setInterval(carregarEstado,300000);
 setInterval(carregarPayroll,6*3.6e6); setInterval(carregarInflacao,6*3.6e6);
